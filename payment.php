@@ -211,7 +211,7 @@ if(isset($_POST['SAVE']))
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="index.html">Society Management<br/> System</a>
+            <a class="navbar-brand" href="#">Society Management<br/> System</a>
             <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <!---
@@ -295,6 +295,7 @@ if(isset($_POST['SAVE']))
                                     <nav class="sb-sidenav-menu-nested nav">
                                         <a class="nav-link" href="payment.php">Cash</a>
                                         <a class="nav-link" href="instant.php">Instant</a>
+                                        <a class="nav-link" href=" credit.php">Credit</a>
                                     
                                     </nav>
                                 </div>

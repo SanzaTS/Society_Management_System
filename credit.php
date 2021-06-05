@@ -5,175 +5,171 @@ include("connection.php");
 
 $name = $_SESSION['name'];
 $message = "";
-if(isset($_POST['single']))
+
+mysqli_query($con, "DELETE FROM reserve WHERE amount = '0' ");
+
+if(isset($_POST['pay']))
 {
     $mid = mysqli_real_escape_string($con,$_POST['id']);
     $membership = mysqli_real_escape_string($con,$_POST['membership']);
     $amount = mysqli_real_escape_string($con,$_POST['amount']);
     $date = date("Y-m-d");
-    $total = 0;
-
-    if(!empty($amount))
-    {
-        if(is_numeric($amount))
-        {
-            $resuts = mysqli_query($con,"SELECT DATEDIFF(NOW(),payment_date) as NumOfDays FROM payment WHERE member_id = $mid");
-            while($row = mysqli_fetch_array($resuts))
-            {
-                $days = $row['NumOfDays'];
-            }
-
-            $months = round($days / 30, 0);
-          if($months > 1 )
-          {
-            if($membership = "Premium")
-              {
-                  $total = (20 * $months) +  (120 * $months);
-
-                  if($amount >= $total)
-                  {
-                                        
-                    if($amount == $total)
-                    {
-                        $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,2)";
-                        if(mysqli_query($con,$premium) or die(mysqli_error($con)))
-                        {
-                           
-                            $message = "Payement completed";
-                            echo "<script>alert('$message');</script>";
-
-                        }
-                        else {
-                            $message ="Payment could not be competed,  something went wrong!";
-                            echo "<script>alert('$message');</script>";
-                        }
-                    }
-                    else {
-                        // reserved
-                    }
-
-                  }
-                  else {
-                    $message = "amount due is R".$total ." Ensure you pay full amount";
-                    echo "<script>alert('$message');</script>";  
-                  }
-              }
-              elseif($membership = "Food") {
-                    $total = (50 * $months) +  (90 * $months);
-
-                    if($amount >= $total)
-                    {
-                        if($amount == $total)
-                        {
-                            $food = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,1)";
-                            if(mysqli_query($con,$food) or die(mysqli_error($con)))
-                            {
-                               
-                                
-                                $message = "Payement completed";
-                                echo "<script>alert('$message');</script>";
-
-                            }
-                            else {
-                                $message ="Payment could not be competed,  something went wrong!";
-                                echo "<script>alert('$message');</script>";
-                            }
-                        }
-                        else {
-                            // reserved
-                        }
-
-                    }
-                    else {
-                    
-                        $message = "amount due is R".$total ." Ensure you pay full amount";
-                        echo "<script>alert('$message');</script>";
-                    }
-              } 
-
-          }
-          else {
-            $message = "Must be more than 1 mothh to make payment";
-            echo "<script>alert('$message');</script>";
-          }
-        
-        }
-        else {
-            $message = "amount must be digit ";
-            echo "<script>alert('$message');</script>";
-        }
    
-    }
-    else {
-        $message = "amount must not be empty ";
-        echo "<script>alert('$message');</script>";
-    }
-}
+    $query = mysqli_query($con,"SELECT amount FROM reserve WHERE memberId = $mid");
 
-if(isset($_POST['double']))
-{
-    $mid = mysqli_real_escape_string($con,$_POST['id']);
-    $membership = mysqli_real_escape_string($con,$_POST['membership']);
-    $amount = mysqli_real_escape_string($con,$_POST['amount']);
-    $date = date("Y-m-d");
-    $total = 0;
+    while($row = mysqli_fetch_array($query))  
+    {
+        $reserve = $row['amount'];
+    } 
 
+     
     if(!empty($amount))
     {
+    
         if(is_numeric($amount))
         {
-            $resuts = mysqli_query($con,"SELECT DATEDIFF(NOW(),payment_date) as NumOfDays FROM payment WHERE member_id = $mid");
-            while($row = mysqli_fetch_array($resuts))
-            {
-                $days = $row['NumOfDays'];
-            }
-
-            $months = round($days / 30, 0);
-          if($months > 1 )
-          {
             
-                  $total = (70 * $months) +  (210 * $months);
-
-                  if($amount >= $total)
-                  {
-                                        
-                    if($amount == $total)
+                if($membership !="none")
+                {
+                    if($membership == "Premium")
                     {
-                        $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,3)";
-                        if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                        if($amount >= 120)
                         {
-                           
-                            $message = "Payement completed";
-                            echo "<script>alert('$message');</script>";
+                            if($amount == 120)
+                            {
 
+
+                                $total = $reserve -$amount;
+
+                               
+
+
+                               $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,2)";
+    
+                                if(mysqli_query($con,$premium) or die(mysqli_error($con)) or die(mysqli_error($con)) )
+                                {
+                                    if(mysqli_query($con,"UPDATE `reserve` SET `amount`= '$total' WHERE memberId = $mid")){
+                                   // $error = "Payement completed";
+                                    $message = "Payement completed";
+                                    echo "<script>alert('$message');</script>";
+
+                                     }
+    
+                                }
+                                else {
+                                   // $error ="Payment could not be competed,  something went wrong!";
+                                    $message = "Payment could not be competed,  something went wrong!t";
+                                    echo "<script>alert('$message');</script>";
+                                }
+    
+                            }
+                           
+                                
+    
+                                
+                            
+    
                         }
                         else {
-                            $message ="Payment could not be competed,  something went wrong!";
+                           // $error ="A minimum of  R120 is required to make Premium Payment";
+                            $message = "A minimum of  R120 is required to make Premium Payment";
+                            echo "<script>alert('$message');</script>";
+                            
+                        }
+                    }
+                    elseif ($membership == "Food") {
+                        if($amount >= 90)
+                        {
+                            if($amount == 90)
+                            {
+                                $total = $reserve -$amount;
+                            
+                                $food = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,1)";
+    
+                                if(mysqli_query($con,$food) or die(mysqli_error($con)))
+                                {
+                                   
+                                   // $error = "Payement completed";
+                                    if(mysqli_query($con,"UPDATE `reserve`  SET `amount`= '$total' WHERE memberId = $mid") or die(mysqli_error($con)) ){
+                                        //$error = "Payement completed";
+                                        $message = "Payement completed";
+                                        echo "<script>alert('$message');</script>"; 
+    
+                                         }
+    
+                                }
+                                else {
+                                   // $error ="Payment could not be competed,  something went wrong!";
+                                    $message = "Payment could not be competed,  something went wrong!";
+                                    echo "<script>alert('$message');</script>";
+                                    
+                                }
+    
+                            }
+                  
+    
+                        }
+                        else{
+                            $error ="A minimum of  R90 is required to make Food Payment";
+                            $message = "A minimum of  R90 is required to make Food Payment";
+                            echo "<script>alert('$message');</script>";
+                            
+                        }
+                    }
+                    elseif ($membership == "Bundle") {
+                        if($amount >= 210)
+                        {
+                            if($amount == 210)
+                            {
+                                $total = $reserve -$amount;
+                                $bundle = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$id,3)";
+    
+                                if(mysqli_query($con,$bundle) or die(mysqli_error($con)))
+                                {
+                                   
+                                 //   $error = "Payement completed";
+                                    if(mysqli_query($con,"UPDATE `reserve` SET `amount`= '$total' WHERE memberId = $mid")  or die(mysqli_error($con)) ){
+                                        //$error = "Payement completed";
+                                        $message = "Payement completed";
+                                        echo "<script>alert('$message');</script>";
+    
+                                         }
+    
+                                }
+                                else {
+                                  //  $error ="Payment could not be competed,  something went wrong!";
+                                    $message = "Payment could not be competed,  something went wrong!";
+                                   echo "<script>alert('$message');</script>";
+                                    
+                                }
+                            }
+                     
+    
+                            
+                        }
+                        else {
+                           // $error ="A minimum of  R210 is required to make Premium & Food Payment";
+                            $message = "A minimum of  R210 is required to make Premium & Food Payment";
                             echo "<script>alert('$message');</script>";
                         }
                     }
-                    else {
-                        // reserved
-                    }
-
-                  }
-                  else {
-                    $message = "amount due is R".$total ." Ensure you pay full amount";
-                    echo "<script>alert('$message');</script>";  
-                  }
-              
-             
-
-            }
-          else {
-            $message = "Must be more than 1 mothh to make payment";
-            echo "<script>alert('$message');</script>";
-          }
-        
+    
+                }
+                else{
+                  //  $error = "Menbership must be selected before you make payement";
+                    $message = "Menbership must be selected before you make payemen";
+                    echo "<script>alert('$message');</script>";
+                }
+    
+          
+    
         }
-        else {
-            $message = "amount must be digit ";
-            echo "<script>alert('$message');</script>";
+        else
+        {
+         // $error = "";
+
+          $message = "The Amount must be digits";
+          echo "<script>alert('$message');</script>";
         }
    
     }
@@ -206,7 +202,7 @@ if(isset($_POST['double']))
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Society Management<br/> System</a>
+            <a class="navbar-brand" href="#  ">Society Management<br/> System</a>
             <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <!---
@@ -352,9 +348,9 @@ if(isset($_POST['double']))
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid">
-                        <h1 class="mt-4">Outstanding Payments</h1>
+                        <h1 class="mt-4">Credit Payments</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Members outstanding payments</li>
+                            <li class="breadcrumb-item active">Pay by Credit</li>
                         </ol>
 
                         
@@ -370,11 +366,7 @@ if(isset($_POST['double']))
                                             <tr>
                                             <th>Name</th>
                                                 <th>Surname</th>
-                                                <th>ID Number</th>
-                                                <th>Phone Number</th>
-                                                <th>gender</th>
-                                                <th>Owing</th>
-                                                <th>Fine</th>
+                                                <th>Credit</th>
                                                 <th>Action</th>
                         
                                             </tr>
@@ -383,12 +375,9 @@ if(isset($_POST['double']))
                                             <tr>
                                                 <th>Name</th>
                                                 <th>Surname</th>
-                                                <th>ID Number</th>
-                                                <th>Phone Number</th>
-                                                <th>gender</th>
-                                                <th>Owing</th>
-                                                <th>Fine</th>
+                                                <th>Credit </th>
                                                 <th>Action</th>
+                                                
                                                 
                                               
                
@@ -398,11 +387,9 @@ if(isset($_POST['double']))
  
                                              <?php
                                                
-                                               $payQuery = "SELECT m.memberId,m.name,m.surname,m.id,m.cell_no,m.gender,p.payment_date
-                                                            FROM member m
-                                                            LEFT JOIN payment p 
-                                                            ON m.memberId = p.member_id
-                                                            WHERE p.payment_date IS NULL";
+                                               $payQuery = "SELECT member.memberId,member.name,member.surname,reserve.amount
+                                                            FROM member,reserve
+                                                            WHERE member.memberId= reserve.memberId";
 
                                                $payment = mysqli_query($con,$payQuery);
 
@@ -411,11 +398,8 @@ if(isset($_POST['double']))
                                                   $memberId = $data['memberId'];
                                                    $name = $data['name'];
                                                    $surname = $data['surname'];
-                                                   $id = $data['id'];
-                                                   $cell = $data['cell_no'];
-                                                   $gender = $data['gender'];
-                                                   $owing = "Premium & Food";
-                                                   $fine = "R70";
+                                                   $credit = $data['amount'];
+                                                
                                                   
                                                   
 
@@ -425,15 +409,12 @@ if(isset($_POST['double']))
                                                <tr>
                                                     <td> <?php echo $name;  ?>  </td>
                                                     <td> <?php echo $surname;  ?> </td>
-                                                    <td> <?php echo $id;  ?> </td>
-                                                    <td> <?php echo $cell;  ?> </td>
-                                                    <td> <?php echo $gender;  ?> </td>
-                                                    <td> <?php echo $owing;  ?> </td>
-                                                    <td> <?php echo $fine;  ?> </td>
+                                                    <td> <?php echo $credit;  ?> </td>
+                                               
                                                   
                                                     <div class="text-center">
                                                    <td>  <a href="" class="btn btn-success btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm2">Pay Now</a>
-                                                   <a href="alert.php?id=<?php echo $memberId;  ?>&owing=both" class="btn btn-warning btn-rounded mb-4" >Send  Alert</a>
+                                                   
                                                    
                                                   </td>
                                                  
@@ -453,13 +434,13 @@ if(isset($_POST['double']))
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header text-center">
-                <h4 class="modal-title w-100 font-weight-bold">Make user payement(Cash)</h4>
+                <h4 class="modal-title w-100 font-weight-bold">Make user payement(Credit)</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div> 
               <div class="modal-body mx-3">
-              <form  method="post"  action="outstanding.php">
+              <form  method="post"  action="credit.php">
                 <div class="md-form mb-5">
                   <i class="fas fa-id-card prefix grey-text"></i>
                   <input type="text" name="id" id="defaultForm-email" class="form-control validate" value="<?php echo $memberId;  ?>">
@@ -474,7 +455,13 @@ if(isset($_POST['double']))
 
                 <div class="md-form mb-4">
                   <i class="fas fa-book prefix grey-text"></i>
-                  <input type="text" name="membership" id="defaultForm-pass" class="form-control validate"  value="<?php echo $owing; ?>"  ?>
+                  
+                  <select name="membership" id="defaultForm-pass">
+                  <option value="none">Please select Membership Type</option>
+                  <option value="Premium">Premium</option>
+                  <option value="Food">Food</option>
+                  <option value="Bundle">Premium & Food</option>
+                  </select><br>
                   <label data-error="wrong" data-success="right" for="defaultForm-pass">Membership Due</label>
                 </div>
 
@@ -486,7 +473,7 @@ if(isset($_POST['double']))
                
               </div>
               <div class="modal-footer d-flex justify-content-center">
-                <button type="submit" name="double" class="btn btn-success">Pay </button>
+                <button type="submit" name="pay" class="btn btn-success">Pay </button>
               </div>
               <form>
             </div>
@@ -499,178 +486,10 @@ if(isset($_POST['double']))
                             </div>
                         </div>
 
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table mr-1"></i>
-                                Users With Single Payment
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                            <th>Name</th>
-                                                <th>Surname</th>
-                                                <th>ID Number</th>
-                                                <th>Phone Number</th>
-                                                <th>gender</th>
-                                                <th>Payment Date</th>
-                                                <th>Amount</th>
-                                                <th>Paid For</th>
-                                                <th>Membership</th> 
-                                                <th>Owing</th> 
-                                                <th>Fine</th>  
-                                                <th>Action</th>                                  
-                        
-                                            </tr>
-                                        </thead>
-                                        <tfoot>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Surname</th>
-                                                <th>ID Number</th>
-                                                <th>Phone Number</th>
-                                                <th>gender</th>
-                                                <th>Payment Date</th>
-                                                <th>Amount</th>
-                                                <th>Paid For</th>
-                                                <th>Membership</th>
-                                                <th>Owing</th>
-                                                <th>Fine</th>
-                                                <th>Action</th>   
-                                              
-               
-                                            </tr>
-                                        </tfoot>
-                                        <tbody>
- 
-                                             <?php
-                                               
-                                               $payQuery = "SELECT  m.memberId,m.name,m.surname,m.id,m.cell_no,m.gender,p.payment_date,p.amount,o.name as OptionName,f.name as membershipName
-                                                            FROM member m,payment p,payment_option o,membership_fee f 
-                                                            WHERE m.memberId = p.member_id
-                                                            AND o.optionId = p.optionId
-                                                            AND p.fee_id = f.fee_id
-                                                            AND MONTH(p.payment_date) = MONTH(CURRENT_DATE) - 1
-                                                          AND YEAR(p.payment_date) = YEAR(CURRENT_DATE)
-                                                            AND memberId IN  (
-                                                                                SELECT member_id
-                                                                                FROM payment
-                                                                                WHERE fee_id <> 3
-                                                                                GROUP BY member_id
-                                                                                HAVING COUNT(member_id) <= 1)";
-
-                                               $payment = mysqli_query($con,$payQuery);
-
-                                               while($data = mysqli_fetch_array($payment))
-                                               {
-                                                   $memberId = $data['memberId'];
-                                                   $name = $data['name'];
-                                                   $surname = $data['surname'];
-                                                   $id = $data['id'];
-                                                   $cell = $data['cell_no'];
-                                                   $gender = $data['gender'];
-                                                   $date = $data['payment_date'];
-                                                   $amount = $data['amount'];
-                                                   $option = $data['OptionName'];
-                                                   $membership = $data['membershipName'];
-                                                   
-                                                   if($membership == "Premium")
-                                                   {
-                                                       $owing = "Food";
-                                                       $fine = "R50";
-                                                   }
-                                                   else {
-                                                    $owing = "Premium";
-                                                    $fine = "R20";
-                                                   }
-                                                  
 
 
-
-                                               ?>
-                                               <tr>
-                                                    <td> <?php echo $name;  ?>  </td>
-                                                    <td> <?php echo $surname;  ?> </td>
-                                                    <td> <?php echo $id;  ?> </td>
-                                                    <td> <?php echo $cell;  ?> </td>
-                                                    <td> <?php echo $gender;  ?> </td>
-                                                    <td> <?php echo $date;  ?> </td>
-                                                    <td> <?php echo "R". $amount;  ?> </td>
-                                                    <td> <?php echo $option;  ?> </td>
-                                                    <td> <?php echo $membership;  ?> </td>
-                                                    <td> <?php echo $owing;  ?> </td>
-                                                    <td> <?php echo $fine;  ?> </td>
-                                                 
-                                                   
-                                                   <div class="text-center">
-                                                   <td>  <a href="" class="btn btn-success btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Pay Now</a>
-                                                   <a href="alert.php?id=<?php echo $memberId;  ?>&owing=<?php echo $owing ?>" class="btn btn-warning btn-rounded mb-4" >Send  Alert</a>
-                                                  </td>
-                                                </div>
-                                                   
-                                                   
-                               
-                                                </tr>                                                           
-
-                                               <?php    
-                                               }
-
-
-
-                                              ?>
-        <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-          aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header text-center">
-                <h4 class="modal-title w-100 font-weight-bold">Make user payement(Cash)</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div> 
-              <div class="modal-body mx-3">
-              <form  method="post"  action="outstanding.php">
-                <div class="md-form mb-5">
-                  <i class="fas fa-id-card prefix grey-text"></i>
-                  <input type="text" name="id" id="defaultForm-email" class="form-control validate" value="<?php echo $memberId;  ?>">
-                  <label data-error="wrong"   data-success="right" for="defaultForm-email">Member Id</label>
-                </div>
-
-                <div class="md-form mb-4">
-                  <i class="fas fa-user prefix grey-text"></i>
-                  <input type="text" name="name"  id="defaultForm-pass" class="form-control validate"  value="<?php echo $name; ?>"  ?>
-                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Member Name</label>
-                </div>
-
-                <div class="md-form mb-4">
-                  <i class="fas fa-book prefix grey-text"></i>
-                  <input type="text" name="membership" id="defaultForm-pass" class="form-control validate"  value="<?php echo $owing; ?>"  ?>
-                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Membership Due</label>
-                </div>
-
-                <div class="md-form mb-4">
-                  <i class="fas fa-coins prefix grey-text"></i>
-                  <input type="text" name="amount" id="defaultForm-pass" class="form-control validate" placeholder= "Enter amount"  ?>
-                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Amount</label>
-                </div>
-               
-              </div>
-              <div class="modal-footer d-flex justify-content-center">
-                <button type="submit" name="single" class="btn btn-success">Pay </button>
-              </div>
-              <form>
-            </div>
-          </div>
-        </div>
-
-
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+         
+   
 
 
                     </div>

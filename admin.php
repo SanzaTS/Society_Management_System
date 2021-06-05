@@ -22,8 +22,8 @@ $name = $_SESSION['name'];
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="index.html">Society Management<br/> System</a>
-            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <a class="navbar-brand" href="#">Society Management<br/> System</a>
+            <button class="btn btn-link bn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <!---
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
@@ -108,6 +108,7 @@ $name = $_SESSION['name'];
                                         <nav class="sb-sidenav-menu-nested nav">
                                             <a class="nav-link" href="payment.php">Cash</a>
                                             <a class="nav-link" href="instant.php">Instant</a>
+                                            <a class="nav-link" href=" credit.php">Credit</a>
                                         
                                         </nav>
                                     </div>

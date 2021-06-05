@@ -53,6 +53,12 @@ if(isset($_POST['reset']))
         <meta name="author" content="" />
         <title>Society Management System</title>
         <link href="css/styles.css" rel="stylesheet" />
+        <style>
+    body {
+      background-image: url(2.jpg) ;
+      filter: blur(8px);
+    }
+  </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
         <script type = "text/javascript">
 

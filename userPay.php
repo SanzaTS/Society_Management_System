@@ -108,6 +108,7 @@ $name = $_SESSION['name'];
                                         <nav class="sb-sidenav-menu-nested nav">
                                             <a class="nav-link" href="payment.php">Cash</a>
                                             <a class="nav-link" href="instant.php">Instant</a>
+                                            <a class="nav-link" href=" credit.php">Credit</a>
                                         
                                         </nav>
                                     </div>

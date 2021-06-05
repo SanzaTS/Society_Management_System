@@ -86,6 +86,12 @@
         <title>Society Management System</title>
         <link href="css/styles.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+
+        <style>
+    body {
+      background-image: url(2.jpg) 
+    }
+  </style>
     </head>
     <body class="bg-primary">
         <div id="layoutAuthentication">
