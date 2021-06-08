@@ -22,6 +22,12 @@ if(isset($_POST['SAVE']))
     $dob = "";
     $gender = "";
 
+    $num_array = str_split($id);
+
+    $id_month = $num_array[2] . $num_array[3];
+
+    $id_day = $num_array[4] . $num_array[5];
+
     if(!empty($name)|| !empty($surname) || !empty($id) || !empty($email) || !empty($phone)  )
     {
      
@@ -55,150 +61,174 @@ if(isset($_POST['SAVE']))
                                                       {
                                                           if(strlen($phone) == 10)
                                                           {
-                                                              $check1 = mysqli_query($con,"SELECT * FROM user WHERE email = '$email'");
-                                                              if(mysqli_num_rows($check1)== 0)
-                                                              {
-                                                                  $date = date("Y-m-d");
-                                                                  $sql1 = "INSERT INTO user(email,password,createDate,active) VALUES('$email','$password','$date','offline')";
-                                                                if(mysqli_query($con,$sql1) or die(mysqli_error($con)))
-                                                                {
-                                                                  $userId = mysqli_insert_id($con);
+                                                            $code = (int) substr($id,10,1);
 
-                                                                  if($role == "admin")
-                                                                  {
-                                                                    $role1 = "INSERT INTO user_role(user_id,role_id) VALUES($userId,1)";
+                                                            if ( $id_month < 1 || $id_month > 12) {
+                                                                $error = "Invalid Month on ID Number";
+                                                                  // die;
+                                                            }
+                                                            else{
 
-                                                                    if(mysqli_query($con,$role1) or die(mysqli_error($con)))
-                                                                    {
-                                                                        $sex1 =  substr($id,6,4);
-                                                                    
-                                                                        if($sex1 < 5000)
-                                                                        {
-                                                                            $gender = "Female";
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            $gender = "Male";
-                                                                        }
-   
-                                                                        $admin = "INSERT INTO admin (name,surname,id,cell_no,gender,userId)  VALUES ('$name','$surname','$id','$phone','$gender',$userId)";
-                                                                    
-                                                                        if(mysqli_query($con,$admin) or die(mysqli_error($con)))
-                                                                        {
-                                                                            
-                                                                                                $body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-                                                                                                <html xmlns="http://www.w3.org/1999/xhtml">
-                                                                                                <head>
-                                                                                                <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-                                                                                                </head>
-                                                                                                <body>
-
-                                                                                                <div>
-                                                                                                        <p> Hi ' . $name . '.</p>
-                                                                                                        <p> </p>
-                                                                                                        <p> Admin has successfully completed the registration on your behalf. </p>
-                                                                                                        <p>Please find the  following information: </p>
-                                                                                                        <p>Use email your email to login. </p>
-                                                                                                        <p>And password is as follows: '.$password.'</p>
-                                                                                                        <p>Please click the following link to check your infnormation "<a href ="http://localhost//Society_Management_System/index.php"  target="_blank">Society Mangement System</a>"</p>
-                                                                                                        <p> </p>
-                                                                                                        <p> </p>
-                                                                                                        <p>Regards </p>
-                                                                                                        <p> Admin </p>
-
-
-                                                                                                </div>
-                                                                                                </body>
-                                                                                                </html>';
-                                                                                               
-
-                                                                           if(sendMail($email,$subject,$body))
-                                                                           {
-                                                                            $error = "Admin successfully added and email has been sent to the user with details";
-                                                                           }
-                                                                           
-  
-  
-                                                                        }
-                                                                        else {
-                                                                            $error ="Something went wrong";
-                                                                        }
-                                                                    }
-
-                                                                  }
-                                                                  elseif($role == "user")
-                                                                  {
-                                                                    $role = "INSERT INTO user_role(user_id,role_id) VALUES($userId,2)";
-
-                                                                    if(mysqli_query($con,$role) or die(mysqli_error($con)))
-                                                                    {
-                                                                        $sex =  substr($id,6,4);
-                                                                    
-                                                                        if($sex < 5000)
-                                                                        {
-                                                                            $gender = "Female";
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            $gender = "Male";
-                                                                        }
-   
-                                                                        $member = "INSERT INTO member(name,surname,id,cell_no,status,start_date,gender,user_id)  VALUES ('$name','$surname','$id','$phone','member','$date','$gender',$userId)";
-                                                                    
-                                                                        if(mysqli_query($con,$member) or die(mysqli_error($con)))
-                                                                        {
-                                                                            $body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-                                                                            <html xmlns="http://www.w3.org/1999/xhtml">
-                                                                            <head>
-                                                                            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-                                                                            </head>
-                                                                            <body>
-
-                                                                            <div>
-                                                                                    <p> Hi ' . $name . '.</p>
-                                                                                    <p> </p>
-                                                                                    <p> Admin has successfully completed the registration on your behalf. </p>
-                                                                                    <p>Please find the  following information: </p>
-                                                                                    <p>Use email your email to login. </p>
-                                                                                    <p>And password is as follows: '.$password.'</p>
-                                                                                    <p>Please click the following link to check your infnormation "<a href ="http://localhost//Society_Management_System/index.php"  target="_blank">Society Mangement System</a>"</p>
-                                                                                    <p> </p>
-                                                                                    <p> </p>
-                                                                                    <p>Regards </p>
-                                                                                    <p> Admin </p>
-
-
-                                                                            </div>
-                                                                            </body>
-                                                                            </html>';
-
-                                                                            if(sendMail($email,$subject,$body))
-                                                                            {
-                                                                                  $error = "User successfully added and email has been sent to the user with details";
-                                                                            }
-  
-  
-                                                                        }
-                                                                        else {
-                                                                            $error ="Something went wrong";
-                                                                        }
-                                                                    }
-                                                                  }
-                                                                  elseif ($role = "none") {
-                                                                      $error = "Select role to complete payment";
-                                                                  }
-
-
-
+                                                                if ( $id_day < 1 || $id_day > 31) {
+                                                                    $error = "Invalid Day on ID Number";
                                                                 }
+                                                                else{
+                                                                    if($code == 0 || $code ==1 ){
 
 
-                                                                 
+                                                                        $check1 = mysqli_query($con,"SELECT * FROM user WHERE email = '$email'");
+                                                                        if(mysqli_num_rows($check1)== 0)
+                                                                        {
+                                                                            $date = date("Y-m-d");
+                                                                            $sql1 = "INSERT INTO user(email,password,createDate,active) VALUES('$email','$password','$date','offline')";
+                                                                          if(mysqli_query($con,$sql1) or die(mysqli_error($con)))
+                                                                          {
+                                                                            $userId = mysqli_insert_id($con);
+          
+                                                                            if($role == "admin")
+                                                                            {
+                                                                              $role1 = "INSERT INTO user_role(user_id,role_id) VALUES($userId,1)";
+          
+                                                                              if(mysqli_query($con,$role1) or die(mysqli_error($con)))
+                                                                              {
+                                                                                  $sex1 =  substr($id,6,4);
+                                                                              
+                                                                                  if($sex1 < 5000)
+                                                                                  {
+                                                                                      $gender = "Female";
+                                                                                  }
+                                                                                  else
+                                                                                  {
+                                                                                      $gender = "Male";
+                                                                                  }
+             
+                                                                                  $admin = "INSERT INTO admin (name,surname,id,cell_no,gender,userId)  VALUES ('$name','$surname','$id','$phone','$gender',$userId)";
+                                                                              
+                                                                                  if(mysqli_query($con,$admin) or die(mysqli_error($con)))
+                                                                                  {
+                                                                                      
+                                                                                                          $body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                                                                                                          <html xmlns="http://www.w3.org/1999/xhtml">
+                                                                                                          <head>
+                                                                                                          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                                                                                                          </head>
+                                                                                                          <body>
+          
+                                                                                                          <div>
+                                                                                                                  <p> Hi ' . $name . '.</p>
+                                                                                                                  <p> </p>
+                                                                                                                  <p> Admin has successfully completed the registration on your behalf. </p>
+                                                                                                                  <p>Please find the  following information: </p>
+                                                                                                                  <p>Use email your email to login. </p>
+                                                                                                                  <p>And password is as follows: '.$password.'</p>
+                                                                                                                  <p>Please click the following link to check your infnormation "<a href ="http://localhost//Society_Management_System/index.php"  target="_blank">Society Mangement System</a>"</p>
+                                                                                                                  <p> </p>
+                                                                                                                  <p> </p>
+                                                                                                                  <p>Regards </p>
+                                                                                                                  <p> Admin </p>
+          
+          
+                                                                                                          </div>
+                                                                                                          </body>
+                                                                                                          </html>';
+                                                                                                         
+          
+                                                                                     if(sendMail($email,$subject,$body))
+                                                                                     {
+                                                                                      $error = "Admin successfully added and email has been sent to the user with details";
+                                                                                     }
+                                                                                     
+            
+            
+                                                                                  }
+                                                                                  else {
+                                                                                      $error ="Something went wrong";
+                                                                                  }
+                                                                              }
+          
+                                                                            }
+                                                                            elseif($role == "user")
+                                                                            {
+                                                                              $role = "INSERT INTO user_role(user_id,role_id) VALUES($userId,2)";
+          
+                                                                              if(mysqli_query($con,$role) or die(mysqli_error($con)))
+                                                                              {
+                                                                                  $sex =  substr($id,6,4);
+                                                                              
+                                                                                  if($sex < 5000)
+                                                                                  {
+                                                                                      $gender = "Female";
+                                                                                  }
+                                                                                  else
+                                                                                  {
+                                                                                      $gender = "Male";
+                                                                                  }
+             
+                                                                                  $member = "INSERT INTO member(name,surname,id,cell_no,status,start_date,gender,user_id)  VALUES ('$name','$surname','$id','$phone','member','$date','$gender',$userId)";
+                                                                              
+                                                                                  if(mysqli_query($con,$member) or die(mysqli_error($con)))
+                                                                                  {
+                                                                                      $body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                                                                                      <html xmlns="http://www.w3.org/1999/xhtml">
+                                                                                      <head>
+                                                                                      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                                                                                      </head>
+                                                                                      <body>
+          
+                                                                                      <div>
+                                                                                              <p> Hi ' . $name . '.</p>
+                                                                                              <p> </p>
+                                                                                              <p> Admin has successfully completed the registration on your behalf. </p>
+                                                                                              <p>Please find the  following information: </p>
+                                                                                              <p>Use email your email to login. </p>
+                                                                                              <p>And password is as follows: '.$password.'</p>
+                                                                                              <p>Please click the following link to check your infnormation "<a href ="http://localhost//Society_Management_System/index.php"  target="_blank">Society Mangement System</a>"</p>
+                                                                                              <p> </p>
+                                                                                              <p> </p>
+                                                                                              <p>Regards </p>
+                                                                                              <p> Admin </p>
+          
+          
+                                                                                      </div>
+                                                                                      </body>
+                                                                                      </html>';
+          
+                                                                                      if(sendMail($email,$subject,$body))
+                                                                                      {
+                                                                                            $error = "User successfully added and email has been sent to the user with details";
+                                                                                      }
+            
+            
+                                                                                  }
+                                                                                  else {
+                                                                                      $error ="Something went wrong";
+                                                                                  }
+                                                                              }
+                                                                            }
+                                                                            elseif ($role = "none") {
+                                                                                $error = "Select role to complete payment";
+                                                                            }
+          
+          
+          
+                                                                          }
+          
+          
+                                                                           
+          
+                                                                       }
+                                                                       else {
+                                                                            $error = "Email already exists";
+                                                                        }
+                                                                        
+                                                                    }
+                                                                    else{
+                                                                        $error = "Invalid Citizenship on ID Number";
+                                                                    }
+                                                                }
+                                                            }
 
-                                                             }
-                                                             else {
-                                                                  $error = "Email already exists";
-                                                              }
+
 
                                                           }
                                                           else {

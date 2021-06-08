@@ -112,7 +112,7 @@ if(isset($_POST['save']) )
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="logout.php">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
+                  Logout 
                 </a>
               </div>
             </li>
@@ -143,13 +143,11 @@ if(isset($_POST['save']) )
                                     Make Payments
                                     <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                 </a>
-                                <div class="collapse" id="payments" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="payment.php">Cash</a>
-                                        <a class="nav-link" href="instant.php">Instant</a>
-                                        <a class="nav-link" href=" credit.php">Credit</a>
-                                    
-                                    </nav>
+                                        <!--<nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="payment.php">Cash</a>
+                                            <a class="nav-link" href="instant.php">Instant</a>
+                                        
+                                        </nav>-->
                                 </div>
                                 </nav>
                             </div>

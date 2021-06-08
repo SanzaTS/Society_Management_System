@@ -172,8 +172,7 @@ if(isset($_POST['double']))
         
         }
         else {
-            $message = "amount must be digit ";
-            echo "<script>alert('$message');</script>";
+
         }
    
     }

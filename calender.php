@@ -20,14 +20,13 @@ if(isset($_POST['save']) )
    // $sDate = strtotime($sdate);
     //$eDate = strtotime($edate);
 
+    
     $sDate = date_create($sdate);
     $eDate = date_create($edate);
 
 
     $start = date_format($sDate, 'Y-m-d H:i:s');
     $end = date_format($eDate, 'Y-m-d H:i:s');
-
- 
     
     $sql = "INSERT INTO events( title,start_date, end_date, status) VALUES ('$title','$start','$end',1) ";
 
@@ -114,7 +113,7 @@ if(isset($_POST['save']) )
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="logout.php">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
+                  Logout 
                 </a>
               </div>
             </li>
@@ -122,7 +121,6 @@ if(isset($_POST['save']) )
           <!---- end checking --->
         </nav>
         <div id="layoutSidenav">
-            <div id="layoutSidenav_nav">
             <div id="layoutSidenav_nav">
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
@@ -133,12 +131,12 @@ if(isset($_POST['save']) )
                                 Dashboard
                             </a>-->
                             <div class="sb-sidenav-menu-heading">Society Mangement System</div>
-                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                              <!--   <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                  Actions
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                              </a>-->
-                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                    <!-- <a class="nav-link" href="addUser.php">Add User</a> -->
                                     
@@ -148,18 +146,15 @@ if(isset($_POST['save']) )
                                         Make Payments
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                     </a>-->
-                                    <div class="collapse" id="payments" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                        <!--<nav class="sb-sidenav-menu-nested nav">
+                                <div class="collapse" id="payments" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                    <!--<nav class="sb-sidenav-menu-nested nav">
                                             <a class="nav-link" href="payment.php">Cash</a>
                                             <a class="nav-link" href="instant.php">Instant</a>
                                         
                                         </nav>-->
-                                    </div>
-                                      
+                                </div>
                                 </nav>
-                             </div>
-
-
+                            </div>
                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                                 Views
@@ -167,24 +162,24 @@ if(isset($_POST['save']) )
                             </a>
                             <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                    <!-- a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                          <!--  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
                                         Users
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                     </a>
                                     <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="newUsers.php">New Users</a>
+                                            <a class="nav-link" href="newUsers.php">New Users</a>
                                             <a class="nav-link" href="users.php">All Users</a>
                                             <a class="nav-link" href="membersReport.php"> Members</a>
                                         </nav>
-                                    </div>  -->
+                                    </div> -->
                                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
                                         Payments
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                     </a>
                                     <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                        <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="perUser.php"> Payments</a>
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="perUser.php"> Payments</a>
                                             <a class="nav-link" href="userOutstanding.php">Outsanding Payments</a>
                                             <a class="nav-link" href="annual.php"> Anuall Payment</a>
                                         </nav>
@@ -204,7 +199,7 @@ if(isset($_POST['save']) )
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        <?php echo $name."<br>[Member]"; ?>
+                        <?php echo $name."[Member]"; ?>
                     </div>
                 </nav>
             </div>
@@ -213,7 +208,7 @@ if(isset($_POST['save']) )
                     <div class="container-fluid">
                         <h1 class="mt-4">Calender</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active"></li>
+                            <li class="breadcrumb-item active">View and Add Events</li>
                         </ol>
 
                         <div class="card-body">
@@ -267,22 +262,26 @@ if(isset($_POST['save']) )
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
           <i class="fas fa-calendar prefix grey-text"></i>
-          <input type="date" data-date-inline-picker="true" name = "sdate"  id="defaultForm-email" class="form-control validate" >
+          
+          <input type="date" data-date-inline-picker="true" name = "sdate"  id="defaultForm-email" class="form-control validate" value="<?php echo date('Y-m-d'); ?>" >
           <label data-error="wrong" data-success="right" for="defaultForm-email">Start date</label>
         </div>
      
 
         <div class="md-form mb-4">
           <i class="fas fa-calendar prefix grey-text"></i>
-          <input type="date" data-date-inline-picker="true" name = "edate" id="defaultForm-pass" class="form-control validate" value="<?php echo date('Y-m-d'); ?>>
+          <input type="date" data-date-inline-picker="true" name = "edate" id="defaultForm-pass" class="form-control validate" value="<?php echo date('Y-m-d'); ?>" >
           <label data-error="wrong" data-success="right" for="defaultForm-pass">End date</label>
         </div>
 
         <div class="md-form mb-4">
           <i class="fas fa-book prefix grey-text"></i>
-          <input type="text"  name = "title" id="defaultForm-pass" class="form-control validate" value="<?php echo date('Y-m-d'); ?>>
+          <input type="text"  name = "title" id="defaultForm-pass" class="form-control validate">
           <label data-error="wrong" data-success="right" for="defaultForm-pass">Title </label>
         </div>
+
+        
+    
 
       </div>
       <div class="modal-footer d-flex justify-content-center">
@@ -307,7 +306,7 @@ if(isset($_POST['save']) )
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">
                         <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Society Management System</div>
+                           <div class="text-muted">Copyright &copy; Society Management System</div>
                             <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;

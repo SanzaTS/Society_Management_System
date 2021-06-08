@@ -16,6 +16,22 @@
           $dob = "";
           $gender = "";
 
+           $num_array = str_split($id);
+
+           $id_month = $num_array[2] . $num_array[3];
+
+           $id_day = $num_array[4] . $num_array[5];
+  
+       /*     if ( $id_month < 1 || $id_month > 12) {
+                   $error = "Ivalid date";
+                     // die;
+             }
+
+            if ( $id_day < 1 || $id_day > 31) {
+                 $error = "Ivalid date";
+                      //  die;
+            }*/
+
           if(!empty($name)|| !empty($surname) || !empty($id) || !empty($email) || !empty($phone) ||  !empty($password) || !empty($password2) )
           {
            
@@ -50,54 +66,88 @@
                                                             {
                                                                 if(strlen($phone) == 10)
                                                                 {
-                                                                    $check1 = mysqli_query($con,"SELECT * FROM user WHERE email = '$email'");
-                                                                    if(mysqli_num_rows($check1)== 0)
-                                                                    {
-                                                                        $date = date("Y-m-d");
-                                                                        $sql1 = "INSERT INTO user(email,password,createDate,active) VALUES('$email','$password','$date','online')";
-                                                                      if(mysqli_query($con,$sql1) or die(mysqli_error($con)))
-                                                                      {
-                                                                        $userId = mysqli_insert_id($con);
+                                                                    //921109 5739 086
 
-                                                                        $role = "INSERT INTO user_role(user_id,role_id) VALUES($userId,2)";
+                                                                    $month =intval(substr($id,2,2)) ;
+                                                                    $day =  intval(substr($id,4,2));
+                                                                    $code = (int) substr($id,10,1);
 
-                                                                        if(mysqli_query($con,$role) or die(mysqli_error($con)))
-                                                                        {
-                                                                            $sex =  substr($id,6,4);
-                                                                        
-                                                                            if($sex < 5000)
-                                                                            {
-                                                                                $gender = "Female";
+                                                                    /*  if ( $id_day < 1 || $id_day > 31) {
+
+                                                                            if($code == "0" || $code == "1")
+                                                                            {*/
+
+                                                                 if ( $id_month < 1 || $id_month > 12) {
+                                                                                    $error = "Invalid Month on ID Number";
+                                                                                      // die;
+                                                                   }
+                                                                   else{
+                                                                        if ( $id_day < 1 || $id_day > 31) {
+                                                                            $error = "Invalid Day on ID Number";
+                                                                        }
+                                                                        else{
+                                                                            if($code == 0 || $code ==1 ){
+                                                                               // $error = "Valid";
+                                                                                $check1 = mysqli_query($con,"SELECT * FROM user WHERE email = '$email'");
+                                                                                if(mysqli_num_rows($check1)== 0)
+                                                                                  {
+                                                                                        $date = date("Y-m-d");
+                                                                                        $sql1 = "INSERT INTO user(email,password,createDate,active) VALUES('$email','$password','$date','online')";
+                                                                                        if(mysqli_query($con,$sql1) or die(mysqli_error($con)))
+                                                                                        {
+                                                                                             $userId = mysqli_insert_id($con);
+                                                                           
+                                                                                             $role = "INSERT INTO user_role(user_id,role_id) VALUES($userId,2)";
+                                                                           
+                                                                                              if(mysqli_query($con,$role) or die(mysqli_error($con)))
+                                                                                              {
+                                                                                                 $sex =  substr($id,6,4);
+                                                                                                                                                           
+                                                                                                 if($sex < 5000)
+                                                                                                 {
+                                                                                                    $gender = "Female";
+                                                                                                 }
+                                                                                                 else
+                                                                                                 {
+                                                                                                     $gender = "Male";
+                                                                                                 }
+                                                                                       
+                                                                                                 $member = "INSERT INTO member(name,surname,id,cell_no,status,start_date,gender,user_id)  VALUES ('$name','$surname','$id','$phone','member','$date','$gender',$userId)";
+                                                                                                                                                           
+                                                                                                 if(mysqli_query($con,$member) or die(mysqli_error($con)))
+                                                                                                 {
+                                                                                                     $_SESSION['name'] = $email;
+                                                                                                     header("location:member.php");
+                                                                           
+                                                                           
+                                                                                                  }
+                                                                                               }
+                                                                           
+                                                                           
+                                                                                       }
+                                                                                                                                                      
+                                                                                                                                              
+                                                                                                                                                 
+                                                                           
+                                                                               }
+                                                                              else {
+                                                                                   $error = "Email already exists";
+                                                                              }
+
                                                                             }
-                                                                            else
-                                                                            {
-                                                                                $gender = "Male";
-                                                                            }
-       
-                                                                            $member = "INSERT INTO member(name,surname,id,cell_no,status,start_date,gender,user_id)  VALUES ('$name','$surname','$id','$phone','member','$date','$gender',$userId)";
-                                                                        
-                                                                            if(mysqli_query($con,$member) or die(mysqli_error($con)))
-                                                                            {
-                                                                                header("location:member.php");
+                                                                            else{
 
+                                                                             //  $error = "Valid citizenship";
+                                                                               $error = "Invalid Citizenship on ID Number";
+
+                                                                           
 
                                                                             }
                                                                         }
-
-
-                                                                      }
-
-
-                                                                        //$last_id = mysqli_insert_id($link);
-
-                                                                    }
-                                                                    else {
-                                                                        $error = "Email already exists";
-                                                                    }
-
+                                                                   }
                                                                 }
                                                                 else {
-                                                                    $error = "Phne Number must be  10 digits";
+                                                                    $error = "Phone Number must be  10 digits";
                                                                 }
 
                                                             }
