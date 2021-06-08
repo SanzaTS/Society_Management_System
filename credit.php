@@ -122,7 +122,7 @@ if(isset($_POST['pay']))
                             if($amount == 210)
                             {
                                 $total = $reserve -$amount;
-                                $bundle = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$id,3)";
+                                $bundle = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,3)";
     
                                 if(mysqli_query($con,$bundle) or die(mysqli_error($con)))
                                 {

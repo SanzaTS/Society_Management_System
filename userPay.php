@@ -161,7 +161,7 @@ $name = $_SESSION['name'];
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        <?php echo $name. " [Member]"; ?>
+                        <?php echo $name. " [Admin]"; ?>
                     </div>
                 </nav>
             </div>
@@ -273,6 +273,78 @@ $name = $_SESSION['name'];
                                                     <td> <?php echo $amount;  ?> </td>
                                                     <td> <?php echo $option;  ?> </td>
                                                     <td> <?php echo $membership;  ?> </td>
+                                                </tr>                                                           
+
+                                               <?php    
+                                               }
+                                             }
+
+                                            }
+
+                                              ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+
+
+
+                            
+
+
+                            <div class="card-header">
+                                <i class="fas fa-table mr-1"></i>
+                                Sum of Payments 
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                            <th>Name</th>
+                                                <th>Surname</th>
+                                                <th>Total Payments</th>
+                                               
+                                            </tr>
+                                        </thead>
+                                       
+                                        <tbody>
+ 
+                                             <?php
+                                            if(isset($_POST['search']))
+                                            {
+                                                $userValue = mysqli_real_escape_string($con,$_POST['user']);
+
+                                              if($userValue == "noselection")  
+                                              {
+                                               
+                                              }
+                                               else
+                                               {
+                                               $payQuery = "SELECT member.name, member.surname, SUM(payment.amount) AS Total
+                                               FROM member,payment
+                                               WHERE member.memberId = payment.member_id
+                                               AND member.memberId = $userValue
+                                               GROUP BY member.name, member.surname";
+
+                                               $payment = mysqli_query($con,$payQuery);
+
+                                               while($data = mysqli_fetch_array($payment))
+                                               {
+                                                   $name = $data['name'];
+                                                   $surname = $data['surname'];
+                                                   $total = $data['Total'];
+                                               
+
+
+                                               ?>
+                                               <tr>
+                                                    <td> <?php echo $name;  ?>  </td>
+                                                    <td> <?php echo $surname;  ?> </td>
+                                                    <td> <?php echo $total;  ?> </td>
+                                                    
                                                 </tr>                                                           
 
                                                <?php    

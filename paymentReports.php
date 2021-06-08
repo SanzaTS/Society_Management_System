@@ -643,6 +643,73 @@ if(isset($_POST['pdfxport']))
                                 </div>
                             </div>
                         </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table mr-1"></i>
+                               Sum of payments
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                            <th>Year</th>
+                                                <th>Premium Total</th>
+                                                <th>Food Total</th>
+                                                <th>Food & Premium Total</th>
+                                                
+                                            </tr>
+                                        </thead>
+                                       
+                                        <tbody>
+ 
+                                             <?php
+
+                                                   $payQuery = "SELECT YEAR(payment.payment_date) as Year,
+                                                                        SUM(case when (membership_fee.name ='Premium') then payment.amount else 0 end) as 'Premium',
+                                                                        SUM(case when (membership_fee.name ='Food') then  payment.amount else 0 end) as 'Food',
+                                                                        SUM(case when (membership_fee.name ='Bundle') then payment.amount else 0 end) as 'Bundle'
+                                                                        from payment,membership_fee
+                                                                        WHERE payment.fee_id = membership_fee.fee_id
+                                                                        group by YEAR(payment.payment_date)
+                                                                        order by YEAR(payment.payment_date); ";
+
+                                                    $payment = mysqli_query($con,$payQuery);
+                                                    
+
+                                                    
+                                                    while($data = mysqli_fetch_array($payment))
+                                                    {
+                                                        $Year = $data['Year'];
+                                                        $primium = $data['Premium'];
+                                                        $food = $data['Food'];
+                                                        $bundle = $data['Bundle'];
+                                                      
+
+
+                                                    ?>
+                                                    <tr>
+                                                        <td> <?php echo $Year;  ?>  </td>
+                                                        <td> <?php echo $primium;  ?> </td>
+                                                        <td> <?php echo $food;  ?> </td>
+                                                        <td> <?php echo $bundle;  ?> </td>
+                                                   
+                                                    </tr>                                                           
+
+                                                    <?php    
+                                                    }                                                 
+                                          
+
+
+                                              ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
