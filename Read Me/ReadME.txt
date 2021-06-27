@@ -16,3 +16,5 @@ When the user apply for claimthe staus change to inactive
 If claimis rejected user is reactivated to apply for claim again
 
 only PDF AND IMAGE ARE ALLOWED TO BE UPLOADED 
+
+Make sure you add your configurations to functions.php and bootstrap.php after pulling your changes

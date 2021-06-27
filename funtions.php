@@ -17,8 +17,8 @@ function sendMail($sendTo,$subject,$message)
             $mail->Host = 'smtp.mailtrap.io';
             $mail->SMTPAuth = true;
             $mail->Port = 2525;
-            $mail->Username = 'cbae6dd5702956';
-            $mail->Password = '0af4b2116449ba';
+            $mail->Username = 'your username';
+            $mail->Password = 'your password';
         
             $mail->setFrom('noreply@gmail.com', 'society');           
             $mail->addAddress($sendTo);
