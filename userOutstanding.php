@@ -379,13 +379,13 @@ if(isset($_POST['pdfxport']))
                             </a>-->
                             <div class="sb-sidenav-menu-heading">Society Mangement System</div>
                              <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                             <!--   <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                             <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                  Actions
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                             </a>-->
+                             </a>
                              <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                   <!-- <a class="nav-link" href="addUser.php">Add User</a> -->
+                                    <a class="nav-link" href="application.php">Apply For Claim</a>
                                     
 
                                     <!--<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">

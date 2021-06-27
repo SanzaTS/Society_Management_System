@@ -122,7 +122,7 @@ if(isset($_POST['save']) )
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                    <div class="sb-sidenav-menu">
+                <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Menu</div>
                             <a class="nav-link" href="admin.php">
@@ -130,33 +130,40 @@ if(isset($_POST['save']) )
                                 Dashboard
                             </a>
                             <div class="sb-sidenav-menu-heading">Society Mangement System</div>
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                Actions
+                                 Actions
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                             </a>
+                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="addUser.php">Add User</a>
-                                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">
+                                    <a class="nav-link" href="addUser.php">Add User</a>
                                     
-                                    Make Payments
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                        <!--<nav class="sb-sidenav-menu-nested nav">
+
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">
+                                    
+                                        Make Payments
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="payments" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
                                             <a class="nav-link" href="payment.php">Cash</a>
                                             <a class="nav-link" href="instant.php">Instant</a>
+                                            <a class="nav-link" href=" credit.php">Credit</a>
                                         
-                                        </nav>-->
-                                </div>
+                                        </nav>
+                                    </div>
+                                      
                                 </nav>
-                            </div>
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                             </div>
+
+                
+                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                                 Views
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                             </a>
+                             <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
                                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
                                         Users
@@ -164,7 +171,7 @@ if(isset($_POST['save']) )
                                     </a>
                                     <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="newUsers.php">New Users</a>
+                                            <a class="nav-link" href="newUsers.php">New Users</a>
                                             <a class="nav-link" href="users.php">All Users</a>
                                             <a class="nav-link" href="membersReport.php"> Members</a>
                                         </nav>
@@ -175,11 +182,22 @@ if(isset($_POST['save']) )
                                     </a>
                                     <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="userPay.php"> Per User</a>
+                                            <a class="nav-link" href="userPay.php"> Per User</a>
                                             <a class="nav-link" href="outstanding.php">Outsanding Payments</a>
                                             <a class="nav-link" href="paymentReports.php"> All Payment</a>
                                         </nav>
                                     </div>
+
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseApp" aria-expanded="false" aria-controls="pagesCollapseApp">
+                                        Claims
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseApp" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="claimApplications.php"> Applications</a>
+                                            <a class="nav-link" href="claims.php">Claims Details</a>
+                                        </nav>
+                                    </div>   
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Events and Communication</div>
@@ -312,6 +330,7 @@ if(isset($_POST['save']) )
                     </div>
                 </footer>
             </div>
+            
         </div>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

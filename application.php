@@ -2,50 +2,153 @@
 
 include("session.php");
 include("connection.php");
+include("funtions.php");
 
 $name = $_SESSION['name'];
 
 $error = " ";
 
-if(isset($_POST['send']))
+$username = "SELECT memberId FROM member m, user u WHERE m.user_id = u.userId and u.email = '$name'";
+$results = mysqli_query($con,$username);
+
+while($row = mysqli_fetch_array($results))
 {
-   $reciever = mysqli_real_escape_string($con,$_POST['user']) ;
-   $msg = mysqli_real_escape_string($con,$_POST['msg']);
-   $date = date("d/m/Y");
-   $time = date("H:i:s");
-   
-   if(!isset($_POST['MyRadio']))
-   {
-       die;
-   }
-
-   $priority = mysqli_real_escape_string($con,$_POST['MyRadio']);
- 
-  /* if(empty($reciever))
-   {
-    $message ="Massage failed to ";
-    echo "<script>alert('$message');</script>";
-   }
-*/
-  // $exec = "INSERT INTO chat(sender, reciever, msg, date, time) VALUES('$name','$reciever','$date','$time')";
-   $exec ="INSERT INTO `chat`( `sender`, `reciever`, `msg`, `date`, `time`, `priority`) VALUES ('$name','$reciever','$msg','$date','$time','$priority')";
-  // $exec = "INSERT INTO `chat`(`sender`, `reciever`, `msg`, `date`, `time`) VALUES ('admin@gmail.com','sanelesithole001@gmail.com','Did you recieve my massege','30/05/2021','14:17:51')";
-
-  if(mysqli_query($con,$exec) or die(mysqli_error($con)))
-   {
-        $message ="Massage sent to ".$reciever;
-        echo "<script>alert('$message');</script>";
-   }
-   else {
-
-    $message ="Something went wrong could not  send the massaage to ".$reciever. " - ". mysqli_error($con);
-    echo "<script>alert('$message');</script>";
-      //mysqli_error($con);
-
-   }
-
+    $mid = $row['memberId'];
 }
 
+$date = date("Y-m-d");
+
+if(isset($_POST['SAVE']))
+{
+  /*  $id = mysqli_real_escape_string($con,$_POST['id']);
+    $cert = mysqli_real_escape_string($con,$_POST['certificates']);*/
+    $date = date("Y-m-d");
+
+        $targetDir = "uploads/";
+        $cert = basename($_FILES["certificates"]["name"]);
+    $fileName = basename($_FILES["id"]["name"]);
+    $targetFilePath = $targetDir . $fileName;
+    $fileType = pathinfo($targetFilePath,PATHINFO_EXTENSION);
+
+    $certLocation = $targetDir.$cert;
+    $certType = pathinfo($certLocation,PATHINFO_EXTENSION);
+
+        if(!empty($fileName) || !empty($cert))
+        {
+            
+            $check = "SELECT member_id, MIN(payment_date) As first_occurence ,year(CURRENT_DATE)- year(MIN(payment_date)) AS years
+                      FROM payment
+                      WHERE member_id = $mid
+                      GROUP BY member_id";
+
+        $res = mysqli_query($con,$check) or die(mysqli_error($con));
+
+        while($line = mysqli_fetch_array($res))
+        {
+           $years = $line['years'];
+        }
+        
+        if($years > 0)
+        {
+           
+                            // Allow certain file formats
+                            $allowTypes = array('jpg','png','jpeg','gif','pdf');
+                            if(in_array($fileType, $allowTypes) ||in_array($certType, $allowTypes)  ){
+                                // Upload file to server
+                                if(move_uploaded_file($_FILES["id"]["tmp_name"], $targetFilePath) && move_uploaded_file($_FILES["certificates"]["tmp_name"], $certLocation)  ){
+                                    // Insert image file name into database 
+                                //  $insert = $db->query("INSERT into images (file_name, uploaded_on) VALUES ('".$fileName."', NOW())");
+                                /*  if($insert){
+                                        $error = "The file ".$fileName. " has been uploaded successfully.";
+                                    }else{
+                                        $error = "File upload failed, please try again.";
+                                    } */
+                                  
+                                $amountQuery = "SELECT member_id, SUM(amount) as Total
+                                        FROM payment 
+                                        WHERE member_id = 15
+                                        ";
+
+                                $money = mysqli_query($con,$amountQuery) or die(mysqli_error($con));
+
+                                while($data = mysqli_fetch_array($money) )
+                                {
+                                    $sum = $data['Total'];
+                                }
+                                
+                                if($years >= 1 || $years <= 5)
+                                {
+                                    $total = $sum - ($sum * 0.15); // 15%
+                                }
+                                elseif ($years > 5 || $years <= 10) {
+                                    $total = $sum - ($sum * 0.1);  // 10%
+                                }
+                                elseif ($years > 10) {
+                                    $total = $sum - ($sum * 0.05);  //5%
+                                }
+
+                                $upload = "INSERT INTO claim(amount, status, claim_date, id_copy, proof, member_id) VALUES('$total','Pending','$date','$fileName','$cert',$mid)";
+            
+                                if(mysqli_query($con,$upload) or die(mysqli_error($con))){
+                                    $update ="UPDATE member SET status='InActive' WHERE memberId = $mid";
+                                    mysqli_query($con,$update);
+            
+                                    $subject = "Claim Application Confirmation";
+            
+                                    $body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                                    <html xmlns="http://www.w3.org/1999/xhtml">
+                                    <head>
+                                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                                    </head>
+                                    <body>
+                                
+                                    <div>
+                                        
+                                        
+                                            <p>Your application submitted for review the update will be provided once it is completed. </p>
+                                            <p> </p>
+                                            <p> </p>
+                                            <p>Regards </p>
+                                            <p> Admin </p>
+                                
+                                
+                                    </div>
+                                    </body>
+                                    </html>';
+            
+                                    if(sendMail($name,$subject,$body))
+                                    {
+                                        $error = "Application competed awaiting approval";
+                                    }
+                                    
+            
+                                }
+                                else{
+                                    $error = "failed to save db.";
+                                }
+            
+                            }else{
+                                $error = "Sorry, there was an error uploading your file.";
+                            }
+                        }else{
+                            $error =  'Sorry, only JPG, JPEG, PNG, GIF, & PDF files are allowed to upload.';
+                        }
+        }
+        else
+        {
+           
+            $error = "You haven't made paymnets for over a year ";
+        }
+       
+
+        }else{
+        $error = 'Make sure you uploaded all required documents';
+        }
+
+
+
+
+}
 
 ?>
 
@@ -62,10 +165,11 @@ if(isset($_POST['send']))
         <link href="css/styles.css" rel="stylesheet" />
         <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+        
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Society Management<br/> System</a>
+            <a class="navbar-brand" href="index.html">Society Management<br/> System</a>
             <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <!---
@@ -106,7 +210,7 @@ if(isset($_POST['send']))
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="userProfile.php">
+                <a class="dropdown-item" href="adminUpdate.php">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                   Profile
                 </a>
@@ -122,11 +226,11 @@ if(isset($_POST['send']))
           <!---- end checking --->
         </nav>
         <div id="layoutSidenav">
-        <div id="layoutSidenav_nav">
+            <div id="layoutSidenav_nav">
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Menu</div>
+                        <div class="sb-sidenav-menu-heading">Menu</div>
                             <!--< a class="nav-link" href="admin.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
@@ -157,7 +261,6 @@ if(isset($_POST['send']))
                                       
                                 </nav>
                              </div>
-
 
                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
@@ -190,12 +293,12 @@ if(isset($_POST['send']))
                                     </div>
                                 </nav>
                             </div>
-                            <div class="sb-sidenav-menu-heading">Events and Communication</div>
+                            <div class="sb-sidenav-menu-heading">Addons</div>
                             <a class="nav-link" href="calender.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                                 Calender
                             </a>
-                            <a class="nav-link" href="chats.php">
+                            <a class="nav-link" href="notification.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Notifications
                             </a>
@@ -203,165 +306,43 @@ if(isset($_POST['send']))
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        <?php echo $name."[Member]"; ?>
+                        <?php echo $name. " [Member]"; ?>
                     </div>
                 </nav>
             </div>
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid">
-                        <h1 class="mt-4">Notification</h1>
+                        <h1 class="mt-4">Claims Application</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Send and Recieve Notifications</li>
+                            <li class="breadcrumb-item active">Make user Application(Claim)</li>
                         </ol>
 
                         <div class="card-body">
-                                        <!-- Dropdown Card Example -->
-                                        <div class="text-center">
-                                                   <td>  <a href="" class="btn btn-success btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm2">Send Notification</a></td>
-                                                </div>
+                                        <form action="application.php" method="post" enctype="multipart/form-data">
+                                        <label class="text-center font-weight-bold my-4" style="color:red;"><?php echo $error; ?></label>
 
+                                         <div class="form-group">
+                                                <label for="formFileLg" class="form-label">Upload Id Copy</label>
+                                                <input class="form-control form-control-lg" id="formFileLg" type="file" name="id"/>
+                                            </div>
 
-              <div class="modal-body mx-3">
-              <form  method="post"  action="chats.php">
-              
-                <div class="modal fade" id="modalLoginForm2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-            aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header text-center">
-                <h4 class="modal-title w-100 font-weight-bold">Send Notification</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div> 
-              <div class="modal-body mx-3">
-              <form  method="post"  action="outstanding.php">
-                <div class="md-form mb-5">
-                  <i class="fas fa-user prefix grey-text"></i>
-                  
-                  <select id="defaultForm-email" class="form-control validate" name="user"> 
-                  <option>--Select Reciever</option>
-                      <?php
-                             $query = "select * from user WHERE email <> '$name'";
-                             $results = mysqli_query($con,$query);
-                             while($row =mysqli_fetch_array($results))
-                             {
-                                 $uName = $row['email'];
-      
-                                 ?>
-      
-                                  <option value="<?php echo $uName; ?>"><?php echo $uName;?><option>
-      
-      
-                                 <?php
-      
-                             }
-                      ?>
-                  </select>
-                  <label data-error="wrong"   data-success="right" for="defaultForm-email">Email </label>
-                </div>
-
-                <div class="md-form mb-4">
-                  <i class="fas fa-book prefix grey-text"></i>
-                  <textarea class="form-control" rows="3" id="defaultForm-pass" name="msg" maxlength="50"></textarea>
-                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Massage</label>
-                </div>
-
-                <div class="md-form mb-4">
-               <!--   <i class="fas fa-book prefix grey-text"></i> -->
-                <!--  <input type="text"  name = "title" id="defaultForm-pass" class="form-control validate">  -->
-                <input type="radio" name="MyRadio" id="defaultForm-pass"  value="High" checked>High Importance <!--This one is automatically checked when the user opens the page -->
-                <input type="radio" name="MyRadio"  id="defaultForm-pass"  value="Low">Low Importance <br>
-                <label data-error="wrong" data-success="right" for="defaultForm-pass"Priority </label>
-                </div>
-
- 
-               
-              </div>
-              <div class="modal-footer d-flex justify-content-center">
-                <button type="submit" name="send" class="btn btn-success">Send  </button>
-              </div>
-              <form>
-            </div>
-          </div>
-        </div>                                      
-<div class="card shadow mb-4">
-  <!-- Card Header - Dropdown -->
-  <?php 
-      
-     $query = "select * from chat WHERE reciever = '$name'";
-       
-      $results = mysqli_query($con,$query);
-     
-     if(mysqli_num_rows($results) > 0  )
-     {
-      while($row = mysqli_fetch_array($results))
-      {
-        $id  = $row['id'];
-        $sender = $row['sender'];
-        $msg = $row['msg'];
-        $date = $row['date'];
-        $time = $row['time'];
-        $priority = $row['priority'];
-
-        $priority = $row['priority'];
-
-        if($priority == "High")
-        {
-            $color= "danger";
-        }
-        else
-        {
-            $color= "warning";
-        }
-        
-      
-
-  ?>
-  <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-    <h4 class="m-0 font-weight-bold text-primary">Notifications</h4><br>
-   
-    
-  </div>
-  <!-- Card Body -->
-  <div class="card-body">
-    
-     
-     <br>
-    
-     <h6 style="color:orange;"> <?php echo $sender."        ".$date."    ".$time;?><h6>
-    
-     <br>
-     <p class="m-0 font-weight-bold text-<?php  echo $color;?>" style="<?php echo $color; ?>"><?php echo $msg; ?></p><br>
-
-     
-     
-     
-  </div>
-
-  <?php
-   }
-}
-else{
-?>
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-    <h4 class="m-0 font-weight-bold text-primary">Notifications</h4><br>
-    <p class="m-0 font-weight-bold text-primary"> No massages recieved </p><br>
-
-<?php
-
-}
-
-?>
-</div>
+                                            
+                                         <div class="form-group">
+                                                <label for="formFileLg" class="form-label">Upload Proof</label>
+                                                <input class="form-control form-control-lg" id="formFileLg" type="file" name="certificates"/>
+                                            </div>
+                                            
+                                            <div class="form-group mt-4 mb-0"><button type="submit" name="SAVE" class="btn btn-success">Apply for Claim</button><br></div>
+                                            
+                                        </form>
 
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">
                         <div class="d-flex align-items-center justify-content-between small">
-                           <div class="text-muted">Copyright &copy; Society Management System</div>
+                            <div class="text-muted">Copyright &copy; Your Website 2021</div>
                             <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;
@@ -381,5 +362,6 @@ else{
         <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
         <script src="assets/demo/datatables-demo.js"></script>
+
     </body>
 </html>

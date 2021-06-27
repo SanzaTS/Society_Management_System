@@ -20,6 +20,16 @@
         if($rows == 1)
         {
 
+            if(!empty($_POST["remember"])) {
+                setcookie ("username", $username,time()+ 3600);
+                setcookie ("password", $password,time()+ 3600);
+               // echo "Cookies Set Successfuly";
+            } else {
+                setcookie("username","");
+                setcookie("password","");
+              //  echo "Cookies Not Set";
+            }
+
             while($row = mysqli_fetch_array($res))
             {
                 $id = $row['userId'];
@@ -48,12 +58,29 @@
                     $_SESSION['name'] = $username;
 
                 */
+                $query ="SELECT  member.status
+                        FROM member,user
+                        WHERE member.user_id = user.userId
+                        AND user.email = '$username' ";
+                
+                $result = mysqli_query($con,$query);
 
-                $status = "";
-                mysqli_query($con,"UPDATE user SET active = 'online' WHERE email = '$username' ");
+                while($line = mysqli_fetch_array($result)){
+                    $stats = $line['status'];
+                }
+                
+                if($stats == "member")
+                {
+                    $status = "";
+                    mysqli_query($con,"UPDATE user SET active = 'online' WHERE email = '$username' ");
+                   
+                    $_SESSION['name'] = $username;
+                    header("location:member.php");
+                }
+                else{
+                    $error= "This account is in active";
+                }
                
-                $_SESSION['name'] = $username;
-                header("location:member.php");
             }
 
              
@@ -116,7 +143,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" id="rememberPasswordCheck" type="checkbox" />
+                                                    <input class="custom-control-input" id="rememberPasswordCheck" type="checkbox" name="remember" />
                                                     <label class="custom-control-label" for="rememberPasswordCheck">Remember password</label>
                                                 </div>
                                             </div>

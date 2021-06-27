@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 05, 2021 at 12:44 PM
+-- Generation Time: Jun 27, 2021 at 01:33 PM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 8.0.3
 
@@ -122,7 +122,9 @@ INSERT INTO `member` (`memberId`, `name`, `surname`, `id`, `cell_no`, `status`, 
 (3, 'makhosonke', 'mkhaliphi', '7708128923087', '0812589214', 'member', '2021-06-02', 'Male', 6),
 (4, 'nozibusiso', 'Mathe', '8807251123088', '0765896220', 'member', '2021-06-02', 'Female', 7),
 (5, 'ben', 'chiwell', '9905086523086', '0835522086', 'member', '2021-06-02', 'Male', 8),
-(6, 'peter', 'parker', '5708195369086', '0836886698', 'member', '2021-06-03', 'Male', 9);
+(6, 'peter', 'parker', '5708195369086', '0836886698', 'member', '2021-06-03', 'Male', 9),
+(15, 'Dennis', 'Rodman', '8711095736086', '0836119953', 'member', '2020-11-01', 'Male', 18),
+(16, 'jonhson', 'bulwa', '9608096825081', '0832955678', 'member', '2021-05-07', 'Male', 19);
 
 -- --------------------------------------------------------
 
@@ -166,7 +168,16 @@ CREATE TABLE `payment` (
 INSERT INTO `payment` (`payment_id`, `payment_date`, `amount`, `optionId`, `member_id`, `fee_id`) VALUES
 (1, '2021-05-22', 210, 1, 5, 3),
 (2, '2021-05-15', 210, 2, 3, 3),
-(4, '2021-05-20', 90, 1, 1, 2);
+(4, '2021-05-20', 90, 1, 1, 2),
+(12, '2020-11-22', 210, 1, 15, 3),
+(13, '2020-12-22', 210, 3, 15, 3),
+(14, '2021-01-22', 210, 2, 15, 3),
+(15, '2021-02-22', 210, 1, 15, 3),
+(16, '2021-03-22', 210, 3, 15, 3),
+(17, '2021-04-22', 210, 2, 15, 3),
+(18, '2021-05-22', 210, 3, 15, 3),
+(19, '2021-06-22', 210, 2, 15, 3),
+(20, '2021-04-07', 210, 1, 16, 3);
 
 -- --------------------------------------------------------
 
@@ -259,14 +270,16 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`userId`, `email`, `password`, `createDate`, `active`) VALUES
-(1, 'admin@gmail.com', 'password', '2021-05-01', 'online'),
+(1, 'admin@gmail.com', 'password', '2021-05-01', 'offline'),
 (2, 'sithole.nosi@gmail.com', 'password', '2021-06-02', 'offline'),
 (4, 'joe.lennon@gmail.com', 'password', '2021-06-02', 'offline'),
 (5, 'sihleK@gmail.com', 'password', '2021-06-02', 'offline'),
 (6, 'mkhaliphi@gmail.com', 'password', '2021-06-02', 'offline'),
 (7, 'zipho.mathe11@gmail.com', 'password', '2021-06-02', 'offline'),
 (8, 'ben.chiwel@gmail.com', 'password', '2021-06-02', 'offline'),
-(9, 'parker.peter@gmail.com', 'password', '2021-06-03', 'offline');
+(9, 'parker.peter@gmail.com', 'password', '2021-06-03', 'offline'),
+(18, 'rodman@gmail.com', 'password', '2020-11-01', 'offline'),
+(19, 'johnsonB@gmail.com', 'password', '2021-04-07', 'offline');
 
 -- --------------------------------------------------------
 
@@ -293,7 +306,9 @@ INSERT INTO `user_role` (`id`, `user_id`, `role_id`) VALUES
 (6, 6, 2),
 (7, 7, 2),
 (8, 8, 2),
-(9, 9, 2);
+(9, 9, 2),
+(18, 18, 2),
+(19, 19, 2);
 
 --
 -- Indexes for dumped tables
@@ -399,19 +414,19 @@ ALTER TABLE `chat`
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `member`
 --
 ALTER TABLE `member`
-  MODIFY `memberId` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `memberId` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `payment`
 --
 ALTER TABLE `payment`
-  MODIFY `payment_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `payment_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `reserve`
@@ -429,13 +444,13 @@ ALTER TABLE `temporary`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `userId` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `userId` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `user_role`
 --
 ALTER TABLE `user_role`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Constraints for dumped tables
@@ -465,6 +480,9 @@ ALTER TABLE `payment`
 -- Constraints for table `user_role`
 --
 
+-- ALTER TABLE `user_role`
+ -- ADD CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`userId`),
+--  ADD CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

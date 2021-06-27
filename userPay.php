@@ -146,6 +146,28 @@ $name = $_SESSION['name'];
                                             <a class="nav-link" href="annual.php"> Anuall Payment</a>
                                         </nav>
                                     </div>
+
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseApp" aria-expanded="false" aria-controls="pagesCollapseApp">
+                                        Claims
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseApp" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="claimApplications.php"> Applications</a>
+                                            <a class="nav-link" href="claims.php">Claims Details</a>
+                                        </nav>
+                                    </div>
+
+                                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseApp" aria-expanded="false" aria-controls="pagesCollapseApp">
+                                        Claims
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseApp" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="claimApplications.php"> Applications</a>
+                                            <a class="nav-link" href="claims.php">Claims Details</a>
+                                        </nav>
+                                    </div>      
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Events and Communication</div>

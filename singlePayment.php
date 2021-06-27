@@ -47,7 +47,7 @@ while($row = mysqli_fetch_array($line))
 }
 }
 else {
-    header("location:outstanding.php?id=<". echo $refId; );
+  //  header("location:outstanding.php?id=<". echo $refId; );
 }
 /*$q = "SELECT memberId FROM member where memberId = $refId";
 $id = 0;

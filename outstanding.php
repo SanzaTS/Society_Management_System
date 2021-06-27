@@ -217,7 +217,7 @@ if(isset($_POST['double']))
                     </div>
                 </div>
             </form>
-            -->
+            
             <!-- Navbar-->
             <!--
             <ul class="navbar-nav ml-auto ml-md-0">
@@ -231,7 +231,7 @@ if(isset($_POST['double']))
                     <a class="dropdown-item" href="login.html">Logout</a>
                 </div>
             </ul>
-           -->
+           
 
             <!----  Cheeking --->
 
@@ -246,7 +246,7 @@ if(isset($_POST['double']))
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="adminUpdate.php">
+                <a class="dropdown-item" href="adminProfile.php">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                   Profile
                 </a>
@@ -329,6 +329,17 @@ if(isset($_POST['double']))
                                             <a class="nav-link" href="paymentReports.php"> All Payment</a>
                                         </nav>
                                     </div>
+
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseApp" aria-expanded="false" aria-controls="pagesCollapseApp">
+                                        Claims
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseApp" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="claimApplications.php"> Applications</a>
+                                            <a class="nav-link" href="claims.php">Claims Details</a>
+                                        </nav>
+                                    </div>   
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Events and Communication</div>
@@ -401,7 +412,8 @@ if(isset($_POST['double']))
                                                             FROM member m
                                                             LEFT JOIN payment p 
                                                             ON m.memberId = p.member_id
-                                                            WHERE p.payment_date IS NULL";
+                                                            WHERE p.payment_date IS NULL
+                                                            AND m.status = 'member'";
 
                                                $payment = mysqli_query($con,$payQuery);
 
@@ -557,6 +569,7 @@ if(isset($_POST['double']))
                                                                                 FROM payment
                                                                                 WHERE fee_id <> 3
                                                                                 GROUP BY member_id
+                                                                                AND m.status = 'member'
                                                                                 HAVING COUNT(member_id) <= 1)";
 
                                                $payment = mysqli_query($con,$payQuery);

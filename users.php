@@ -112,7 +112,8 @@ $name = $_SESSION['name'];
                                         
                                         </nav>
                                     </div>
-                                      
+                                    
+                                   
                                 </nav>
                              </div>
 
@@ -144,6 +145,16 @@ $name = $_SESSION['name'];
                                         <a class="nav-link" href="userPay.php"> Per User</a>
                                             <a class="nav-link" href="outstanding.php">Outsanding Payments</a>
                                             <a class="nav-link" href="paymentReports.php"> All Payment</a>
+                                        </nav>
+                                    </div>
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseApp" aria-expanded="false" aria-controls="pagesCollapseApp">
+                                        Claims
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseApp" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="claimApplications.php"> Applications</a>
+                                            <a class="nav-link" href="claims.php">Claims Details</a>
                                         </nav>
                                     </div>
                                 </nav>
@@ -227,13 +238,13 @@ $name = $_SESSION['name'];
                                                    }
                                                    else {
                                                     $color= "color:green";
-                                                   }
+                                                   } 
 
                                                ?>
                                                <tr>
                                                     <td> <?php echo $username;  ?>  </td>
                                                     <td> <?php echo $date;  ?> </td>
-                                                    <td style ='<?php echo $color ?> '> <?php echo $status;  ?> </td>
+                                                    <td style ='<?php echo $color ?>;font-weight: bold '> <?php echo $status;  ?> </td>
                                                     <td> <?php echo $name;  ?> </td>
                                                     
                                                        <td>  <a href="delUser.php?id=<?php echo $id; ?>&role=<?php echo $name; ?>" class="btn btn-danger btn-rounded mb-4" >Delete User</a></td>
