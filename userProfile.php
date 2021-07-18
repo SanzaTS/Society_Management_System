@@ -251,17 +251,18 @@ if(isset($_POST['update']))
                                     <a class="nav-link" href="application.php">Apply For Claim</a>
                                     
 
-                                    <!--<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">
                                     
                                         Make Payments
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                    </a>-->
+                                    </a>
                                     <div class="collapse" id="payments" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                        <!--<nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="payment.php">Cash</a>
-                                            <a class="nav-link" href="instant.php">Instant</a>
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="userCash.php">Cash</a>
+                                            <a class="nav-link" href="userInstant.php">Instant</a>
+                                            <a class="nav-link" href="userCredit.php">Credit</a>
                                         
-                                        </nav>-->
+                                        </nav>
                                     </div>
                                       
                                 </nav>

@@ -2,158 +2,212 @@
 
 include("session.php");
 include("connection.php");
-include("funtions.php");
 
 $name = $_SESSION['name'];
 
 $error = " ";
 
-$username = "SELECT memberId FROM member m, user u WHERE m.user_id = u.userId and u.email = '$name'";
-$results = mysqli_query($con,$username);
+//$fullName = "";
+$id = 0;
 
-while($row = mysqli_fetch_array($results))
+$userDetaiils = "SELECT member.memberId,member.name,member.surname FROM user,member WHERE user.userId = member.user_id AND user.email = '$name' ";
+
+$queryExec = mysqli_query($con,$userDetaiils);
+
+while($line = mysqli_fetch_array($queryExec))
 {
-    $mid = $row['memberId'];
+    $id = $line['memberId'];
+   $fullName = $line['name'].' '. $line['surname'];
 }
 
-$date = date("Y-m-d");
 
 if(isset($_POST['SAVE']))
 {
-  /*  $id = mysqli_real_escape_string($con,$_POST['id']);
-    $cert = mysqli_real_escape_string($con,$_POST['certificates']);*/
+   // $id = mysqli_real_escape_string($con,$_POST['user']);
+    $membership = mysqli_real_escape_string($con,$_POST['membership']);
+    $amount = mysqli_real_escape_string($con,$_POST['amount']);
     $date = date("Y-m-d");
 
-        $targetDir = "uploads/";
-        $cert = basename($_FILES["certificates"]["name"]);
-    $fileName = basename($_FILES["id"]["name"]);
-    $targetFilePath = $targetDir . $fileName;
-    $fileType = pathinfo($targetFilePath,PATHINFO_EXTENSION);
-
-    $certLocation = $targetDir.$cert;
-    $certType = pathinfo($certLocation,PATHINFO_EXTENSION);
-
-        if(!empty($fileName) || !empty($cert))
+    if(is_numeric($amount))
+    {
+        if($id != "noselection")
         {
-            
-            $check = "SELECT member_id, MIN(payment_date) As first_occurence ,year(CURRENT_DATE)- year(MIN(payment_date)) AS years
-                      FROM payment
-                      WHERE member_id = $mid
-                      GROUP BY member_id";
+            if($membership !="none")
+            {
+                if($membership == "Premium")
+                {
+                    if($amount >= 120)
+                    {
+                        if($amount == 120)
+                        {
+                            $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$id,2)";
 
-        $res = mysqli_query($con,$check) or die(mysqli_error($con));
+                            if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                            {
+                               
+                                $error = "Payement completed";
 
-        while($line = mysqli_fetch_array($res))
-        {
-           $years = $line['years'];
+                            }
+                            else {
+                                $error ="Payment could not be competed,  something went wrong!";
+                            }
+
+                        }
+                        else {
+                            $total = $amount - 120;
+                            $sql = "INSERT INTO reserve( amount, memberId) VALUES($total,$id)";
+
+                            if(mysqli_query($con,$sql))
+                            {
+
+                            $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',120,1,$id,2)";
+
+                            if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                            {
+                               
+                                $error = "Payement completed";
+
+                            }
+                            else {
+                                $error ="Payment could not be competed,  something went wrong!";
+                            }
+                           }
+                           else{
+                            $error ="Payment could not be competed,  extra cash wasn't reserved !";
+                           }
+
+                            
+
+                            
+                        }
+
+                    }
+                    else {
+                        $error ="A minimum of  R120 is required to make Premium Payment";
+                    }
+                }
+                elseif ($membership == "Food") {
+                    if($amount >= 90)
+                    {
+                        if($amount == 90)
+                        {
+                            $check = mysqli_query($con,"SELECT * FROM reserve WHERE memberId = $id");
+                           
+                          /*  if(mysqli_num_rows($check) == 1)
+                            {
+                       
+                            }*/
+
+                            $food = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$id,1)";
+
+                            if(mysqli_query($con,$food) or die(mysqli_error($con)))
+                            {
+                               
+                                $error = "Payement completed";
+
+                            }
+                            else {
+                                $error ="Payment could not be competed,  something went wrong!";
+                            }
+
+                        }
+                        else {
+                            $total = $amount - 90;
+                            $sql = "INSERT INTO reserve( amount, memberId) VALUES($total,$id)";
+
+                            if(mysqli_query($con,$sql))
+                            {
+
+                            
+                            $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',90,1,$id,1)";
+
+                            if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                            {
+                               
+                                $error = "Payement completed";
+
+                            }
+                            else {
+                                $error ="Payment could not be competed,  something went wrong!";
+                            }
+                           }
+                           else{
+                            $error ="Payment could not be competed,  extra cash wasn't reserved !";
+                           }
+                        }
+
+                    }
+                    else{
+                        $error ="A minimum of  R90 is required to make Food Payment";
+                    }
+                }
+                elseif ($membership == "Both") {
+                    if($amount >= 210)
+                    {
+                        if($amount == 210)
+                        {
+                            $bundle = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$id,3)";
+
+                            if(mysqli_query($con,$bundle) or die(mysqli_error($con)))
+                            {
+                               
+                                $error = "Payement completed";
+
+                            }
+                            else {
+                                $error ="Payment could not be competed,  something went wrong!";
+                            }
+                        }
+                        else {
+                            $total = $amount - 120;
+                            $sql = "INSERT INTO reserve( amount, memberId) VALUES($total,$id)";
+
+                            if(mysqli_query($con,$sql))
+                            {
+                            
+                            $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',210,1,$id,3)";
+
+                            if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                            {
+                               
+                                $error = "Payement completed";
+
+                            }
+                            else {
+                                $error ="Payment could not be competed,  something went wrong!";
+                            }
+
+                           }
+                           else{
+                            $error ="Payment could not be competed,  extra cash wasn't reserved !";
+                           }
+                        }
+
+                        
+                    }
+                    else {
+                        $error ="A minimum of  R210 is required to make Premium & Food Payment";
+                    }
+                }
+
+            }
+            else{
+                $error = "Menbership must be selected before you make payement";
+            }
+
         }
-        
-        if($years > 0)
-        {
-           
-                                            // Allow certain file formats
-                $allowTypes = array('jpg','png','jpeg','gif','pdf');
-                        if(in_array($fileType, $allowTypes) ||in_array($certType, $allowTypes)  ){
-                                                // Upload file to server
-                              if(move_uploaded_file($_FILES["id"]["tmp_name"], $targetFilePath) && move_uploaded_file($_FILES["certificates"]["tmp_name"], $certLocation)  ){
-                                                    // Insert image file name into database 
-                                                //  $insert = $db->query("INSERT into images (file_name, uploaded_on) VALUES ('".$fileName."', NOW())");
-                                                /*  if($insert){
-                                                        $error = "The file ".$fileName. " has been uploaded successfully.";
-                                                    }else{
-                                                        $error = "File upload failed, please try again.";
-                                                    } */
-                                                  
-                                   $amountQuery = "SELECT member_id, SUM(amount) as Total
-                                                        FROM payment 
-                                                        WHERE member_id = 15
-                                                        ";
-                
-                                      $money = mysqli_query($con,$amountQuery) or die(mysqli_error($con));
-                
-                                      while($data = mysqli_fetch_array($money) )
-                                                {
-                                          $sum = $data['Total'];
-                                                }
-                                                
-                                                if($years >= 1 || $years <= 5)
-                                                {
-                                                    $total = $sum - ($sum * 0.15); // 15%
-                                                }
-                                                elseif ($years > 5 || $years <= 10) {
-                                                    $total = $sum - ($sum * 0.1);  // 10%
-                                                }
-                                                elseif ($years > 10) {
-                                                    $total = $sum - ($sum * 0.05);  //5%
-                                                }
-                
-                                                $upload = "INSERT INTO claim(amount, status, claim_date, id_copy, proof, member_id) VALUES('$total','Pending','$date','$fileName','$cert',$mid)";
-                            
-                                                if(mysqli_query($con,$upload) or die(mysqli_error($con))){
-                                                    $update ="UPDATE member SET status='InActive' WHERE memberId = $mid";
-                                                    mysqli_query($con,$update);
-                            
-                                                    $subject = "Claim Application Confirmation";
-                            
-                                                    $body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-                                                    <html xmlns="http://www.w3.org/1999/xhtml">
-                                                    <head>
-                                                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-                                                    </head>
-                                                    <body>
-                                                
-                                                    <div>
-                                                        
-                                                        
-                                                            <p>Your application submitted for review the update will be provided once it is completed. </p>
-                                                            <p> </p>
-                                                            <p> </p>
-                                                            <p>Regards </p>
-                                                            <p> Admin </p>
-                                                
-                                                
-                                                    </div>
-                                                    </body>
-                                                    </html>';
-                            
-                                                    if(sendMail($name,$subject,$body))
-                                                    {
-                                                        $error = "Application competed awaiting approval";
-                                                    }
-                                                    
-                            
-                                                }
-                                                else{
-                                                    $error = "failed to save db.";
-                                                }
-                            
-                                            }else{
-                                                $error = "Sorry, there was an error uploading your file.";
-                                            }
-                                        }else{
-                                            $error =  'Sorry, only JPG, JPEG, PNG, GIF, & PDF files are allowed to upload.';
-                                        }
-        
-
-        }
-        else
-        {
-           
-            $error = "You haven't been a member for a year ";
-        }
-       
-
-        }else{
-        $error = 'Make sure you uploaded all required documents';
+        else{
+            $error = "Member must be selected before you make payement";
         }
 
-
-
-
+    }
+    else
+    {
+      $error = "The Amount must be digits";
+    }
 }
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -223,7 +277,7 @@ if(isset($_POST['SAVE']))
                   Logout
                 </a>
               </div>
-            </li> 
+            </li>
 
           <!---- end checking --->
         </nav>
@@ -247,7 +301,6 @@ if(isset($_POST['SAVE']))
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="application.php">Apply For Claim</a>
                                     
-
                                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">
                                     
                                         Make Payments
@@ -316,27 +369,37 @@ if(isset($_POST['SAVE']))
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid">
-                        <h1 class="mt-4">Claims Application</h1>
+                        <h1 class="mt-4">Make payments</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Make user Application(Claim)</li>
+                            <li class="breadcrumb-item active">Make payment</li> 
                         </ol>
 
                         <div class="card-body">
-                                        <form action="application.php" method="post" enctype="multipart/form-data">
+                        <form action="userCash.php" method="post">
                                         <label class="text-center font-weight-bold my-4" style="color:red;"><?php echo $error; ?></label>
+                                           <div class="form-group">
 
-                                         <div class="form-group">
-                                                <label for="formFileLg" class="form-label">Upload Id Copy</label>
-                                                <input class="form-control form-control-lg" id="formFileLg" type="file" name="id"/>
+                                                <label class="small mb-1" for="inputEmailAddress">Member Name</label>
+                                                <input class="form-control py-4" name="user" id="inputEmailAddress" type="text" aria-describedby="emailHelp" value="<?php echo $fullName; ?>"/>
                                             </div>
+                                            <div class="form-group">
+                                                <label class="small mb-1" for="inputEmailAddress">Membership</label>
+                                                <select class="form-control" name="membership"> 
+                                                    
+                                                  <option value="none"> Select Product</option>
+                                                  <option value="Premium"> Premium</option>
+                                                  <option value="Food"> Food</option>
+                                                  <option value="Both"> Premium & Food</option>
+                                                  
+                                                </select>
 
-                                            
-                                         <div class="form-group">
-                                                <label for="formFileLg" class="form-label">Upload Proof</label>
-                                                <input class="form-control form-control-lg" id="formFileLg" type="file" name="certificates"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="small mb-1" for="inputEmailAddress">Amount</label>
+                                                <input class="form-control py-4" name="amount" id="inputEmailAddress" type="text" aria-describedby="emailHelp" placeholder="Enter amount to pay" />
                                             </div>
                                             
-                                            <div class="form-group mt-4 mb-0"><button type="submit" name="SAVE" class="btn btn-success">Apply for Claim</button><br></div>
+                                            <div class="form-group mt-4 mb-0"><button type="submit" name="SAVE" class="btn btn-success">Make Payment</button><br></div>
                                             
                                         </form>
 

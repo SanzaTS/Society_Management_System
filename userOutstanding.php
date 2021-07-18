@@ -6,292 +6,238 @@ include("funtions.php");
 
 $name = $_SESSION['name'];
 
-$sendTo = 'sanelesithole001@gmail.com';
-$message = 'Testing the mail function';
-$subject ='Tsting subject';
-
-//ssendMail($sendTo,$subject,$message);
-
-$username = "SELECT memberId FROM member m, user u WHERE m.user_id = u.userId and u.email = '$name'";
-$results = mysqli_query($con,$username);
-
-while($row = mysqli_fetch_array($results))
+if(isset($_POST['pay']) )
 {
-    $mid = $row['memberId'];
-}
+    $mid = mysqli_real_escape_string($con,$_POST['id']);
+    $membership = mysqli_real_escape_string($con,$_POST['membership']);
+    $amount = mysqli_real_escape_string($con,$_POST['amount']);
+    $date = date("Y-m-j", strtotime("last day of previous month")) ;
+    $total = 0;
 
-  
-if(isset($_POST['word']))
-{
-
-    $filename="Payment Report";
-
-
-    header("Content-type: application/vnd.ms-word");
-  header("Content-Disposition: attachment; Filename =".$filename.".doc");
-  header("Pragma: no-cache");
-  header("Expires: 0");
-     echo "<html>";
-  
-  echo "<body>";
-  echo "<table style=\"border:1px solid;\">";
-  
-  
-  echo" <tr >";
-  echo "<th style=\"border:1px solid;\">Name </th>";
-  echo "<th style=\"border:1px solid;\">Surname </th>";
-  echo "<th style=\"border:1px solid;\">ID Number</th>";  
-  echo "<th style=\"border:1px solid;\">Phone Number</th>"; 
-  echo "<th style=\"border:1px solid;\">Gender</th>"; 
-  echo "<th style=\"border:1px solid;\">Payment Date</th>";
-  echo "<th style=\"border:1px solid;\">Amount</th>";  
-  echo "<th style=\"border:1px solid;\">Option Name</th>";  
-  echo "<th style=\"border:1px solid;\">Member Type</th>";              
-  echo "</tr>";
-  
-  $payQuery = "SELECT m.name,m.surname,m.id ,m.cell_no,m.gender,p.payment_date,p.amount,o.name as OptionName,f.name as membershipName
-  FROM member m,payment p,payment_option o,membership_fee f
-   WHERE m.memberId = p.member_id
-   AND o.optionId = p.optionId
-    AND p.fee_id = f.fee_id
-    AND m.memberId = $mid";
-
-$payment = mysqli_query($con,$payQuery);
-
-while($data = mysqli_fetch_array($payment))
-{
-$name = $data['name'];
-$surname = $data['surname'];
-$id = $data['id'];
-$cell = $data['cell_no'];
-$gender = $data['gender'];
-$date = $data['payment_date'];
-$amount = $data['amount'];
-$option = $data['OptionName'];
-$membership = $data['membershipName'];
-        
-            
-  
-  
-  
-  echo "<tr>";
-   echo"<td style=\"border:1px solid;\" >".$name."</td>";
-    echo"<td style=\"border:1px solid;\">".$surname."</td>";
-    echo"<td style=\"border:1px solid;\">".$id."</td>";
-    echo"<td style=\"border:1px solid;\">".$cell."</td>";
-    echo"<td style=\"border:1px solid;\">".$gender."</td>";
-    echo"<td style=\"border:1px solid;\">".$date."</td>";
-    echo"<td style=\"border:1px solid;\">".$amount."</td>";
-    echo"<td style=\"border:1px solid;\">".$option."</td>";
-    echo"<td style=\"border:1px solid;\">".$membership."</td>";
-    
-    
-  echo "</tr>";
-  
-  
-    }
-  
-  echo "</table>";
-  echo "<body>";
-  echo "</html>";
-
-}
-
-if(isset($_POST['excel']))
-{
-    $filename="Payment Report";
-
-
-    header("Content-type: application/vnd.ms-excel");
-    header("Content-Disposition: attachment; Filename =".$filename.".xls");
-    header("Pragma: no-cache");
-    header("Expires: 0");
-    echo "<html>";
-
-    echo "<body>";
-    echo "<table style=\"border:1px solid;\">";
-
-    echo" <tr >";
-    echo "<th style=\"border:1px solid;\">Name </th>";
-    echo "<th style=\"border:1px solid;\">Surname </th>";
-    echo "<th style=\"border:1px solid;\">ID Number</th>";  
-    echo "<th style=\"border:1px solid;\">Phone Number</th>"; 
-    echo "<th style=\"border:1px solid;\">Gender</th>"; 
-    echo "<th style=\"border:1px solid;\">Payment Date</th>";
-    echo "<th style=\"border:1px solid;\">Amount</th>";  
-    echo "<th style=\"border:1px solid;\">Option Name</th>";  
-    echo "<th style=\"border:1px solid;\">Member Type</th>";              
-    echo "</tr>";
-    
-    $payQuery = "SELECT m.name,m.surname,m.id ,m.cell_no,m.gender,p.payment_date,p.amount,o.name as OptionName,f.name as membershipName
-    FROM member m,payment p,payment_option o,membership_fee f
-     WHERE m.memberId = p.member_id
-     AND o.optionId = p.optionId
-      AND p.fee_id = f.fee_id
-      AND m.memberId = $mid";
-  
-  $payment = mysqli_query($con,$payQuery);
-  
-  while($data = mysqli_fetch_array($payment))
-  {
-  $name = $data['name'];
-  $surname = $data['surname'];
-  $id = $data['id'];
-  $cell = $data['cell_no'];
-  $gender = $data['gender'];
-  $date = $data['payment_date'];
-  $amount = $data['amount'];
-  $option = $data['OptionName'];
-  $membership = $data['membershipName'];
-          
-              
-    
-    
-    
-    echo "<tr>";
-     echo"<td style=\"border:1px solid;\" >".$name."</td>";
-      echo"<td style=\"border:1px solid;\">".$surname."</td>";
-      echo"<td style=\"border:1px solid;\">".$id."</td>";
-      echo"<td style=\"border:1px solid;\">".$cell."</td>";
-      echo"<td style=\"border:1px solid;\">".$gender."</td>";
-      echo"<td style=\"border:1px solid;\">".$date."</td>";
-      echo"<td style=\"border:1px solid;\">".$amount."</td>";
-      echo"<td style=\"border:1px solid;\">".$option."</td>";
-      echo"<td style=\"border:1px solid;\">".$membership."</td>";
-      
-      
-    echo "</tr>";
-
-    }
-
-    echo "</table>";
-    echo "<body>";
-    echo "</html>";
-}
-
-if(isset($_POST['pdfxport']))
-{
-
-    require("fpdf/fpdf.php");
-
-    class PDF extends FPDF
-  
+    if(!empty($amount))
     {
-      
-      // Page header
-      function Header()
-      {
-        $image1 = "images/tutpng.png";
-          // Logo
-          $this->Image($image1,10,6,30);
-          // Arial bold 15
-          $this->SetFont('Arial','B',15);
-          // Move to the right
-          $this->Cell(80);
-          // Title
-          $this->Cell(100,10, $this->Image($image1,10,6,30),1,1,'C');
-          // Line break
-          $this->Ln(20);
-          $this->Cell(198,10, "Member List ",1,1,'C');
-          $this->Ln();
-      }
-      
-      // Page footer
-      function Footer()
-      {
-          // Position at 1.5 cm from bottom
-          $this->SetY(-15);
-          // Arial italic 8
-          $this->SetFont('Arial','I',8);
-          // Page number
-          $this->Cell(0,10,'Member List ',0,0,'C');
-          $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
-      }
-      }
-      
-      // Instanciation of inherited class
-      $pdf = new PDF();
-      $pdf->AliasNbPages();
-      $pdf->AddPage();
-      $pdf->SetFont('Times','',8);
-       
-      
-       
-      
-      
-            
-        
-        $pdf->Ln();
-      
-        
-         
-        
-        $pdf->Cell(15,10,'name',1,0);
-        $pdf->Cell(15,10,'Surname',1,0);
-        $pdf->Cell(34,10,'ID Number',1,0);
-        $pdf->Cell(34,10,'Phone Number',1,0);
-        $pdf->Cell(33,10,'Gender',1,0);
-        $pdf->Cell(17,10,'Payment Date',1,0);
-        $pdf->Cell(16,10,'Amount',1,0);
-        $pdf->Cell(16,10,'Option Name',1,0);
-        $pdf->Cell(16,10,'Amount',1,0);
-        
-  
-        $pdf->Ln();
-          
+        if(is_numeric($amount))
+        {
+            $resuts = mysqli_query($con,"SELECT TIMESTAMPDIFF(MONTH, MAX(payment_date), NOW()) as NumOfDays FROM payment WHERE member_id = $mid");
+            $days = 0;
+            while($row = mysqli_fetch_array($resuts))
+            {
+                $days = $row['NumOfDays'];
+            }
+            echo $days;
+            $months = $days;
+          if($months > 0 )
+          {
+            if($membership = "Premium")
+              {
+                  $total = (20 * $months) +  (120 * $months);
+
+                  if($amount >= $total)
+                  {
+                                        
+                    if($amount == $total)
+                    {
+                        $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,2)";
+                        if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                        {
+                           
+                            $message = "Payement completed";
+                            echo "<script>alert('$message');</script>";
+
+                        }
+                        else {
+                            $message ="Payment could not be competed,  something went wrong!";
+                            echo "<script>alert('$message');</script>";
+                        }
+                    }
+                    else {
+                        // reserved
+                    }
+
+                  }
+                  else {
+                    $message = "amount due is R".$total ." Ensure you pay full amount";
+                    echo "<script>alert('$message');</script>";  
+                  }
+              }
+              elseif($membership = "Food") {
+                    $total = (50 * $months) +  (90 * $months);
+
+                    if($amount >= $total)
+                    {
+                        if($amount == $total)
+                        {
+                            $food = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,1)";
+                            if(mysqli_query($con,$food) or die(mysqli_error($con)))
+                            {
+                               
+                                
+                                $message = "Payement completed";
+                                echo "<script>alert('$message');</script>";
+
+                            }
+                            else {
+                                $message ="Payment could not be competed,  something went wrong!";
+                                echo "<script>alert('$message');</script>";
+                            }
+                        }
+                        else {
+                            // reserved
+                        }
+
+                    }
+                    else {
                     
-        $payQuery = "SELECT m.name,m.surname,m.id ,m.cell_no,m.gender,p.payment_date,p.amount,o.name as OptionName,f.name as membershipName
-        FROM member m,payment p,payment_option o,membership_fee f
-         WHERE m.memberId = p.member_id
-         AND o.optionId = p.optionId
-          AND p.fee_id = f.fee_id
-          AND m.memberId = $mid";
-      
-      $payment = mysqli_query($con,$payQuery);
-      
-      while($data = mysqli_fetch_array($payment))
-      {
-      $name = $data['name'];
-      $surname = $data['surname'];
-      $id = $data['id'];
-      $cell = $data['cell_no'];
-      $gender = $data['gender'];
-      $date = $data['payment_date'];
-      $amount = $data['amount'];
-      $option = $data['OptionName'];
-      $membership = $data['membershipName'];
+                        $message = "amount due is R".$total ." Ensure you pay full amount";
+                        echo "<script>alert('$message');</script>";
+                   
+                    }
+              } 
+              elseif($membership = "Premium & Food"){
+
+
+                echo "Amounts: ".$amount;
+
+                    $resuts = mysqli_query($con,"SELECT DATEDIFF(NOW(),payment_date) as NumOfDays FROM payment WHERE member_id = $mid");
+                        while($row = mysqli_fetch_array($resuts))
+                        {
+                            $days = $row['NumOfDays'];
+                        }
+            
+                        $months = intval($days);
+                      if($months >= 1 )
+                      {
+                        
+                              $total = (70 * $months) +  (210 * $months);
+            
+                            //  echo $total;
+            
+                              if($amount >= $total)
+                              {
+                                                    
+                                if($amount == $total)
+                                {
+                                    $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,3)";
+                                    if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                                    {
+                                       
+                                        $message = "Payement completed";
+                                        echo "<script>alert('$message');</script>";
+            
+                                    }
+                                    else {
+                                        $message ="Payment could not be competed,  something went wrong!";
+                                        echo "<script>alert('$message');</script>";
+                                    }
+                                }
+                                else {
+                                    // reserved
+                                }
+            
+                              }
+                              else {
+                                $message = "amount due is R".$total ." Ensure you pay full amount";
+                                echo "<script>alert('$message');</script>";  
+                              }
+                          
+                         
+            
+                        }
+                      else {
+                        $message = "Must be more than 1 mothh to make payment";
+                        echo "<script>alert('$message');</script>";
+            
+
+            
+            
+                      }
+                    
+               
               
-          
-          
-         
-         
+
+
+              }
+              elseif($membership = NULL)
+              {
+                $message = "Missing Menberships";
+                echo "<script>alert('$message');</script>";
+              }
+
+
+
+          }
+          else {
+          //  $message = "Must be more than 1 mothh to make payment";
+         //   echo "<script>alert('$message');</script>";
+         $startDate = mysqli_query($con,"SELECT TIMESTAMPDIFF(MONTH, start_date, NOW()) as Months FROM member WHERE memberId = $mid");
+         //    $monthReg =0;
+             while($row = mysqli_fetch_array($startDate))
+             {
+                 $months = $row['Months'];
+                
+             }
+ 
+             $months = intval($months);
            
-            $pdf->Cell(15,10,$name,1,0);
-            $pdf->Cell(15,10,$surname,1,0);
-            $pdf->Cell(34,10,$id,1,0);
-            $pdf->Cell(34,10,$cell,1,0);
-            $pdf->Cell(33,10,$gender,1,0);
-            $pdf->Cell(17,10,$date,1,0);
-            $pdf->Cell(16,10,$amount,1,0);
-            $pdf->Cell(16,10,$option,1,0);
-            $pdf->Cell(16,10,$membership,1,0);
-           
-  
-            
-          
-          
+             echo "Months between". $months; 
+ 
+             echo "<br> member id :". $mid;
+             if($months > 0)
+             {
+ 
+ 
+                 
+                 $total = (70 * $months) +  (210 * $months);
+ 
+                 if($amount >= $total)
+                 {
+                                       
+                   if($amount == $total)
+                   {
+                       $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,3)";
+                       if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                       {
+                          
+                           $message = "Payement completed";
+                           echo "<script>alert('$message');</script>";
+     
+                       }
+                       else {
+                           $message ="Payment could not be competed,  something went wrong!";
+                           echo "<script>alert('$message');</script>";
+                       }
+                   }
+                   else {
+                       // reserved
+                   }
+     
+                 }
+                 else {
+                   $message = "amount due is R".$total ." Ensure you pay full amount";
+                   echo "<script>alert('$message');</script>";  
+                 }
+             }
+             else{
+                 $message = "Yo can not pay for users registerd this month";
+                 echo "<script>alert('$message');</script>";  
+ 
+             }
+
+          }
         
-        $pdf->Ln();
-            
-           
-          
-         }
-        
-        
-        $filename = "Members Report.pdf";
-      
-      $pdf->Output();
+        }
+        else {
+            $message = "amount must be digit ";
+            echo "<script>alert('$message');</script>";
+        }
+   
+    }
+    else {
+        $message = "amount must not be empty ";
+        echo "<script>alert('$message');</script>";
+    }
 }
+
 
 
 ?>
@@ -324,7 +270,7 @@ if(isset($_POST['pdfxport']))
                 </div>
             </form>
             
-            <!-- Navbar-->
+            Navbar-->
             <!--
             <ul class="navbar-nav ml-auto ml-md-0">
                 <li class="nav-item dropdown">
@@ -388,17 +334,18 @@ if(isset($_POST['pdfxport']))
                                     <a class="nav-link" href="application.php">Apply For Claim</a>
                                     
 
-                                    <!--<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">
+                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">
                                     
                                         Make Payments
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                    </a>-->
+                                    </a>
                                     <div class="collapse" id="payments" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                        <!--<nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="payment.php">Cash</a>
-                                            <a class="nav-link" href="instant.php">Instant</a>
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="userCash.php">Cash</a>
+                                            <a class="nav-link" href="userInstant.php">Instant</a>
+                                            <a class="nav-link" href="userCredit.php">Credit</a>
                                         
-                                        </nav>-->
+                                        </nav>
                                     </div>
                                       
                                 </nav>
@@ -462,7 +409,7 @@ if(isset($_POST['pdfxport']))
                         </ol>
 
                         <div class="card-body">
-                        <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0" method ="post" action="member.php">
+                  <!--      <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0" method ="post" action="userOutstanding.php">  -->
                             <!--<div>
                                <button type="submit" name="pdfxport" class="btn btn-success">PDF</button> 
                                <button type="submit" name="excel" class="btn btn-success">Excel</button> 
@@ -499,12 +446,15 @@ if(isset($_POST['pdfxport']))
                                                   $mid = $row['memberId'];
                                                }
 
-                                               $payQuery = "SELECT m.memberId,m.name,m.surname,m.id,m.cell_no,m.gender,p.payment_date
-                                               FROM member m
-                                               LEFT JOIN payment p 
-                                               ON m.memberId = p.member_id
-                                               WHERE p.payment_date IS NULL
-                                               and m.memberId = $mid";
+                                               $payQuery = "SELECT m.memberId,m.name,m.surname,m.id,m.cell_no,m.gender,m.start_date,p.payment_date
+                                                            FROM member m
+                                                            LEFT JOIN payment p 
+                                                                ON m.memberId = p.member_id
+                                                            WHERE p.payment_date IS NULL
+                                                            AND m.status = 'member'
+                                                            AND MONTH(m.start_date) <> MONTH(CURRENT_DATE)
+                                                            AND YEAR(m.start_date) <= YEAR(CURRENT_DATE)
+                                                            and m.memberId = $mid";
 
                                               $payment = mysqli_query($con,$payQuery);
 
@@ -523,6 +473,7 @@ if(isset($_POST['pdfxport']))
                                                 <th>gender</th>
                                                 <th>owing</th>
                                                 <th>fine</th>
+                                                <th>Action</th>
                                                 
                                                 
                                             </tr>
@@ -536,6 +487,7 @@ if(isset($_POST['pdfxport']))
                                                 <th>gender</th>
                                                 <th>owing</th>
                                                 <th>fine</th>
+                                                <th>Action</th>
                                                
                                                 
                                             </tr>
@@ -549,12 +501,14 @@ if(isset($_POST['pdfxport']))
                                                     
                                                     while($data = mysqli_fetch_array($payment))
                                                     {
-                                                        $id = $data['memberId'];
+                                                        $mid = $data['memberId'];
                                                         $name = $data['name'];
                                                         $surname = $data['surname'];
                                                         $id = $data['id'];
                                                         $cell = $data['cell_no'];
                                                         $gender = $data['gender'];
+                                                        $owing = "Premium & Food";
+                                                        $fine = "70";
                                                         
                                                       
 
@@ -566,8 +520,9 @@ if(isset($_POST['pdfxport']))
                                                         <td> <?php echo $id;  ?> </td>
                                                         <td> <?php echo $cell;  ?> </td>
                                                         <td> <?php echo $gender;  ?> </td>
-                                                        <td> Premium & Food </td>
-                                                        <td> R70 </td>
+                                                        <td> <?php echo $owing;  ?> </td>
+                                                        <td>R <?php echo $fine;  ?> </td>
+                                                        <td>  <a href="" class="btn btn-success btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm2">Pay Now</a>
 
                                                         
                                                        
@@ -593,6 +548,7 @@ if(isset($_POST['pdfxport']))
                                                 <th>Membership Type</th>
                                                 <th>Owing</th>
                                                 <th>fine</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
@@ -608,6 +564,7 @@ if(isset($_POST['pdfxport']))
                                                 <th>Membership Type</th>
                                                 <th>Owing</th>
                                                 <th>fine</th>
+                                                <th>Action</th>
                                             </tr>
                                         </tfoot>
                                         <tbody>
@@ -630,6 +587,7 @@ if(isset($_POST['pdfxport']))
                                                     {
                                                     while($data = mysqli_fetch_array($payment))
                                                     {
+                                                        $mid = $data['memberId'];
                                                         $name = $data['name'];
                                                         $surname = $data['surname'];
                                                         $id = $data['id'];
@@ -662,7 +620,8 @@ if(isset($_POST['pdfxport']))
                                                             <td> <?php echo $option;  ?> </td>
                                                             <td> <?php echo $membership;  ?> </td>
                                                             <td> <?php echo $owing;  ?> </td>
-                                                            <td> <?php echo $fine;  ?> </td>
+                                                            <td>R <?php echo $fine;  ?> </td>
+                                                            <td>  <a href="" class="btn btn-success btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm2">Pay Now</a>
                                                         </tr>                                                           
 
                                                     <?php    
@@ -674,6 +633,50 @@ if(isset($_POST['pdfxport']))
 
 
                                                  ?>
+       <div class="modal fade" id="modalLoginForm2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Make  payement(Cash)</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div> 
+              <div class="modal-body mx-3">
+              <form  method="post"  action="userOutstanding.php">
+                <div class="md-form mb-5">
+               <!--   <i class="fas fa-id-card prefix grey-text"></i>  -->
+                  <input type="hidden" name="id" id="defaultForm-email" class="form-control validate" value="<?php echo $mid;  ?>">
+                 <!-- <label data-error="wrong"   data-success="right" for="defaultForm-email">Member Id</label>  -->
+                </div>
+
+                <div class="md-form mb-4">
+                  <i class="fas fa-user prefix grey-text"></i>
+                  <input type="text" name="name"  id="defaultForm-pass" class="form-control validate"  value="<?php echo $name; ?>"  ?>
+                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Member Name</label>
+                </div>
+
+                <div class="md-form mb-4">
+                  <i class="fas fa-book prefix grey-text"></i>
+                  <input type="text" name="membership" id="defaultForm-pass" class="form-control validate"  value="<?php echo $owing; ?>"  ?>
+                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Membership Due</label>
+                </div>
+
+                <div class="md-form mb-4">
+                  <i class="fas fa-coins prefix grey-text"></i>
+                  <input type="text" name="amount" id="defaultForm-pass" class="form-control validate" placeholder= "Enter amount"  ?>
+                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Amount</label>
+                </div>
+               
+              </div>
+              <div class="modal-footer d-flex justify-content-center">
+                <button type="submit" name="pay" class="btn btn-success">Pay </button>
+              </div>
+              <form>
+            </div>
+          </div>
+        </div>   
                                         </tbody>
                                     </table>
                                 </div>

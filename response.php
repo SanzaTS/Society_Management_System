@@ -2,6 +2,7 @@
 
 include("session.php");
 include("connection.php");
+//$name = $_SESSION['name'];
 
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
@@ -18,7 +19,7 @@ $payment = Payment::get($paymentId, $apiContext);
 $execution = new PaymentExecution();
 $execution->setPayerId($_GET['PayerID']);
 
-$sql= "SELECT amount,membership,memberId FROM temporary ";
+$sql= "SELECT amount,membership,name,memberId  FROM temporary ";
 
 $results = mysqli_query($con,$sql);
 
@@ -27,6 +28,7 @@ while($row = mysqli_fetch_array($results))
     $amount = $row['amount'];
     $membership = $row['membership'];
     $memberId = $row['memberId'];
+    $name = $row['name'];
     
     if($membership == "Food")
     {
@@ -40,7 +42,22 @@ while($row = mysqli_fetch_array($results))
     }
 }
 
+$sql = "SELECT role.name
+        FROM role,user_role,user,member
+        WHERE role.role_id = user_role.role_id
+        AND user.userId = user_role.user_id
+        AND user.userId =member.user_id
+        AND user.email = '$name' ";
+
+$res = mysqli_query($con,$sql);
+
+while($line = mysqli_fetch_array($res))
+{
+    $role = $line['name'];
+}
+
 $date = date('Y-m-d');
+
 
 $insert = "INSERT INTO payment ( payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,2,$memberId,$fee)";
 
@@ -49,16 +66,39 @@ if(mysqli_query($con,$insert) or die(mysqli_error($con)))
     $remove = "DELETE FROM temporary WHERE memberId = $memberId ";
     if(mysqli_query($con,$remove))
     {
-        header("location:paymentReports.php");
-    }
+        $_SESSION['name'] = $name;
+        if($role = "admin")
+        {
+            header("location:paymentReports.php");
+        }
+        else{
+            header("location:perUser.php");
+        }
+    } 
     else
     {
-        header("location:paymentReports.php");
+
+        $_SESSION['name'] = $name;
+        if($role = "admin")
+        {
+            header("location:paymentReports.php");
+        }
+        else{
+            header("location:perUser.php");
+        }
     }
     
 }
 else{
-    header("location:instant.php");
+    $_SESSION['name'] = $name;
+    if($role = "admin")
+    {
+        header("location:instant.php");
+    }
+    else{
+        header("location:userInstant.php");
+    }
+  //  header("location:instant.php");
 }
 
 /*

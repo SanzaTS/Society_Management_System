@@ -3,6 +3,8 @@
 include("session.php");
 include("connection.php");
 
+$name = $_SESSION['name'];
+
 use PayPal\Api\Amount;
 use PayPal\Api\Payer;
 use PayPal\Api\Payment;
@@ -19,7 +21,19 @@ $membership = $_POST['membership'];
 $money =$_POST['amount'];
 $userId = $_POST['user'];
 
-mysqli_query($con,"INSERT INTO `temporary`(`amount`, `membership`, `memberId`) VALUES('$money','$membership',$userId)");
+if(empty($membership)|| empty($money)|| empty($userId) )
+{
+    $message ="Make sure all fields are filled";
+    echo "<script>alert('$message');
+    </script>";
+
+    //window.location.href='admin/ahm/panel';
+}
+
+$remove = "DELETE FROM temporary ";
+mysqli_query($con,$remove);
+
+mysqli_query($con,"INSERT INTO `temporary`(`amount`, `membership`,`name`, `memberId`) VALUES('$money','$membership','$name',$userId)"); 
 
 $payer = new Payer();
 $payer->setPaymentMethod('paypal');

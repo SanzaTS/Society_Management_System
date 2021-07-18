@@ -340,7 +340,7 @@ if(isset($_POST['SAVE']))
                                             <a class="nav-link" href="claimApplications.php"> Applications</a>
                                             <a class="nav-link" href="claims.php">Claims Details</a>
                                         </nav>
-                                    </div>   
+                                    </div>    
                                 </nav>
                             </div>
                             <div class="sb-sidenav-menu-heading">Events and Communication</div>
@@ -377,7 +377,7 @@ if(isset($_POST['SAVE']))
                                                     
                                                   <option value="noselection"> select member</option>
                                                   <?php
-                                                            $userQuery = mysqli_query($con,"SELECT memberId,name,surname FROM member");
+                                                            $userQuery = mysqli_query($con,"SELECT memberId,name,surname FROM member where status = 'member' ");
 
                                                             while($row = mysqli_fetch_array($userQuery))
                                                             {

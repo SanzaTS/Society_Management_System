@@ -2,92 +2,182 @@
 
 include("session.php");
 include("connection.php");
-include("funtions.php");
 
 $name = $_SESSION['name'];
 $message = "";
-if(isset($_POST['send']))
+
+mysqli_query($con, "DELETE FROM reserve WHERE amount = '0' ");
+
+if(isset($_POST['pay']))
 {
-  
     $mid = mysqli_real_escape_string($con,$_POST['id']);
-    $name = mysqli_real_escape_string($con,$_POST['name']);
-    $reason = mysqli_real_escape_string($con,$_POST['reason']);
-    $msg = mysqli_real_escape_string($con,$_POST['msg']);
-    
-    $update = "UPDATE claim SET status = 'Rejected' WHERE member_id = $mid";
-
-    if(mysqli_query($con,$update) or die(mysqli_errno($con))) 
-    {
-       $status = "UPDATE member SET status = 'member' WHERE memberId = $mid";
-
-       if(mysqli_query($con,$status) or die(mysqli_errno($con)))
-       {
-         
-        
-        $subject = "    REJECTED DUE TO : ". $reason;
-            
-        $body = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-        <html xmlns="http://www.w3.org/1999/xhtml">
-        <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        </head>
-        <body>
-    
-        <div>
-            
-                <p>Hi  '.$name.' </p>
-                <p> </p>
-                <p> </p>
-                <p> </p>
-                <p>Your application was rejected due to the following reason: . </p>
-                <p> </p>
-                <p>'.$msg.'  </p>
-                <p> </p>
-                <p>Regards </p>
-                <p> Admin </p>
-    
-    
-        </div>
-        </body>
-        </html>';
-
-        $query = "SELECT user.email,member.name
-        FROM user,member
-        WHERE user.userId = member.user_id
-        AND member.memberId = $mid";
-
-        $reults = mysqli_query($con, $query) or die(mysqli_error($con));
-
-        while($row = mysqli_fetch_array($reults))
-        {
-           $email = $row['email'];
-
-        }
-
-        if(sendMail($email,$subject,$body))
-        {
-         
-           // $error = "Application competed awaiting approval";
-        
-           ?>
-           <script type="text/javascript">
-           alert("Email has been sent to the applicant");
-           window.location.href = "claimApplications.php?success";
-           </script>
-
-        <?php
-        }
-
-       }
-    }
+    $membership = mysqli_real_escape_string($con,$_POST['membership']);
+    $amount = mysqli_real_escape_string($con,$_POST['amount']);
+    $date = date("Y-m-d");
    
+    $query = mysqli_query($con,"SELECT amount FROM reserve WHERE memberId = $mid");
 
+    while($row = mysqli_fetch_array($query))  
+    {
+        $reserve = $row['amount'];
+    } 
 
+     
+    if(!empty($amount))
+    {
     
+        if(is_numeric($amount))
+        {
+            
+                if($membership !="none")
+                {
+                    if($membership == "Premium")
+                    {
+                        if($amount >= 120)
+                        {
+                            if($amount == 120)
+                            {
+
+
+                                $total = $reserve -$amount;
+
+                               
+
+
+                               $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,2)";
+    
+                                if(mysqli_query($con,$premium) or die(mysqli_error($con)) or die(mysqli_error($con)) )
+                                {
+                                    if(mysqli_query($con,"UPDATE `reserve` SET `amount`= '$total' WHERE memberId = $mid")){
+                                   // $error = "Payement completed";
+                                    $message = "Payement completed";
+                                    echo "<script>alert('$message');</script>";
+
+                                     }
+    
+                                }
+                                else {
+                                   // $error ="Payment could not be competed,  something went wrong!";
+                                    $message = "Payment could not be competed,  something went wrong!t";
+                                    echo "<script>alert('$message');</script>";
+                                }
+    
+                            }
+                           
+                                
+    
+                                
+                            
+    
+                        }
+                        else {
+                           // $error ="A minimum of  R120 is required to make Premium Payment";
+                            $message = "A minimum of  R120 is required to make Premium Payment";
+                            echo "<script>alert('$message');</script>";
+                            
+                        }
+                    }
+                    elseif ($membership == "Food") {
+                        if($amount >= 90)
+                        {
+                            if($amount == 90)
+                            {
+                                $total = $reserve -$amount;
+                            
+                                $food = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,1)";
+    
+                                if(mysqli_query($con,$food) or die(mysqli_error($con)))
+                                {
+                                   
+                                   // $error = "Payement completed";
+                                    if(mysqli_query($con,"UPDATE `reserve`  SET `amount`= '$total' WHERE memberId = $mid") or die(mysqli_error($con)) ){
+                                        //$error = "Payement completed";
+                                        $message = "Payement completed";
+                                        echo "<script>alert('$message');</script>"; 
+    
+                                         }
+    
+                                }
+                                else {
+                                   // $error ="Payment could not be competed,  something went wrong!";
+                                    $message = "Payment could not be competed,  something went wrong!";
+                                    echo "<script>alert('$message');</script>";
+                                    
+                                }
+    
+                            }
+                  
+    
+                        }
+                        else{
+                            $error ="A minimum of  R90 is required to make Food Payment";
+                            $message = "A minimum of  R90 is required to make Food Payment";
+                            echo "<script>alert('$message');</script>";
+                            
+                        }
+                    }
+                    elseif ($membership == "Bundle") {
+                        if($amount >= 210)
+                        {
+                            if($amount == 210)
+                            {
+                                $total = $reserve -$amount;
+                                $bundle = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,3)";
+    
+                                if(mysqli_query($con,$bundle) or die(mysqli_error($con)))
+                                {
+                                   
+                                 //   $error = "Payement completed";
+                                    if(mysqli_query($con,"UPDATE `reserve` SET `amount`= '$total' WHERE memberId = $mid")  or die(mysqli_error($con)) ){
+                                        //$error = "Payement completed";
+                                        $message = "Payement completed";
+                                        echo "<script>alert('$message');</script>";
+    
+                                         }
+    
+                                }
+                                else {
+                                  //  $error ="Payment could not be competed,  something went wrong!";
+                                    $message = "Payment could not be competed,  something went wrong!";
+                                   echo "<script>alert('$message');</script>";
+                                    
+                                }
+                            }
+                     
+    
+                            
+                        }
+                        else {
+                           // $error ="A minimum of  R210 is required to make Premium & Food Payment";
+                            $message = "A minimum of  R210 is required to make Premium & Food Payment";
+                            echo "<script>alert('$message');</script>";
+                        }
+                    }
+    
+                }
+                else{
+                  //  $error = "Menbership must be selected before you make payement";
+                    $message = "Menbership must be selected before you make payemen";
+                    echo "<script>alert('$message');</script>";
+                }
+    
+          
+    
+        }
+        else
+        {
+         // $error = "";
+
+          $message = "The Amount must be digits";
+          echo "<script>alert('$message');</script>";
+        }
+   
+    }
+    else {
+        $message = "amount must not be empty ";
+        echo "<script>alert('$message');</script>";
+    }
 }
-
-
-
 
 ?>
 
@@ -103,16 +193,11 @@ if(isset($_POST['send']))
         <link href="css/styles.css" rel="stylesheet" />
         <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
-
-        <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin=anonymous>
-<script src=//code.jquery.com/jquery-3.3.1.slim.min.js integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin=anonymous></script>
-<script src=//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin=anonymous></script>
-<script src=//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin=anonymous></script>
-<script src=//code.jquery.com/jquery-3.5.1.slim.js integrity="sha256-DrT5NfxfbHvMHux31Lkhxg42LY6of8TaYyK50jnxRnM=" crossorigin=anonymous></script>
+        
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Society Management<br/> System</a>
+            <a class="navbar-brand" href="index.html">Society Management<br/> System</a>
             <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <!---
@@ -124,7 +209,7 @@ if(isset($_POST['send']))
                     </div>
                 </div>
             </form>
-            -->
+            
             <!-- Navbar-->
             <!--
             <ul class="navbar-nav ml-auto ml-md-0">
@@ -138,7 +223,7 @@ if(isset($_POST['send']))
                     <a class="dropdown-item" href="login.html">Logout</a>
                 </div>
             </ul>
-           -->
+           
 
             <!----  Cheeking --->
 
@@ -173,20 +258,20 @@ if(isset($_POST['send']))
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Menu</div>
-                            <a class="nav-link" href="admin.php">
+                        <div class="sb-sidenav-menu-heading">Menu</div>
+                            <!--< a class="nav-link" href="admin.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
-                            </a>
+                            </a>-->
                             <div class="sb-sidenav-menu-heading">Society Mangement System</div>
                              <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                             <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                  Actions
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                              </a>
                              <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="addUser.php">Add User</a>
+                                    <a class="nav-link" href="application.php">Apply For Claim</a>
                                     
 
                                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#payments" aria-expanded="false" aria-controls="payments">
@@ -196,9 +281,9 @@ if(isset($_POST['send']))
                                     </a>
                                     <div class="collapse" id="payments" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="payment.php">Cash</a>
-                                            <a class="nav-link" href="instant.php">Instant</a>
-                                            <a class="nav-link" href=" credit.php">Credit</a>
+                                            <a class="nav-link" href="userCash.php">Cash</a>
+                                            <a class="nav-link" href="userInstant.php">Instant</a>
+                                            <a class="nav-link" href="userCredit.php">Credit</a>
                                         
                                         </nav>
                                     </div>
@@ -206,51 +291,39 @@ if(isset($_POST['send']))
                                 </nav>
                              </div>
 
-                
-                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                                 Views
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                             </a>
-                             <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                            </a>
+                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                   <!-- <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
                                         Users
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                     </a>
                                     <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="newUsers.php">New Users</a>
+                                        <a class="nav-link" href="newUsers.php">New Users</a>
                                             <a class="nav-link" href="users.php">All Users</a>
                                             <a class="nav-link" href="membersReport.php"> Members</a>
                                         </nav>
-                                    </div>
+                                    </div>  -->
                                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
                                         Payments
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                     </a>
                                     <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
                                         <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="userPay.php"> Per User</a>
-                                            <a class="nav-link" href="outstanding.php">Outsanding Payments</a>
-                                            <a class="nav-link" href="paymentReports.php"> All Payment</a>
+                                        <a class="nav-link" href="perUser.php"> Payments</a>
+                                            <a class="nav-link" href="userOutstanding.php">Outsanding Payments</a>
+                                            <a class="nav-link" href="annual.php"> Anuall Payment</a>
                                         </nav>
                                     </div>
-
-                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseApp" aria-expanded="false" aria-controls="pagesCollapseApp">
-                                        Claims
-                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                    </a>
-                                    <div class="collapse" id="pagesCollapseApp" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                        <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="claimApplications.php"> Applications</a>
-                                            <a class="nav-link" href="claims.php">Claims Details</a>
-                                        </nav>
-                                    </div>   
                                 </nav>
                             </div>
-                            <div class="sb-sidenav-menu-heading">Events and Communication</div>
-                            <a class="nav-link" href="events.php">
+                            <div class="sb-sidenav-menu-heading">Addons</div>
+                            <a class="nav-link" href="calender.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                                 Calender
                             </a>
@@ -262,23 +335,22 @@ if(isset($_POST['send']))
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        <?php echo $name. " [ADMIN]"; ?>
+                        <?php echo $name. " [Member]"; ?>
                     </div>
                 </nav>
             </div>
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid">
-                        <h1 class="mt-4">Member Applications</h1>
+                        <h1 class="mt-4">Make Pyament </h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Members claim application</li>
+                            <li class="breadcrumb-item active">Make credit payments</li>
                         </ol>
 
-                        
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table mr-1"></i>
-                               Proccess Applications
+                                Users Missng all Payment
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -287,15 +359,7 @@ if(isset($_POST['send']))
                                             <tr>
                                             <th>Name</th>
                                                 <th>Surname</th>
-                                                <th>ID Number</th>
-                                                <th>Phone Number</th>
-                                                <th>gender</th>
-                                                <th>Membership Status</th>
-                                                <th>Payment Due</th>
-                                                <th>Application Status</th>
-                                                <th>date</th>
-                                                <th>Id Coopy</th>
-                                                <th>Certificates</th>
+                                                <th>Credit</th>
                                                 <th>Action</th>
                         
                                             </tr>
@@ -304,16 +368,9 @@ if(isset($_POST['send']))
                                             <tr>
                                                 <th>Name</th>
                                                 <th>Surname</th>
-                                                <th>ID Number</th>
-                                                <th>Phone Number</th>
-                                                <th>gender</th>
-                                                <th>Membership Status</th>
-                                                <th>Payment Due</th>
-                                                <th>Application Status</th>
-                                                <th>date</th>
-                                                <th>Id Coopy</th>
-                                                <th>Certificates</th>
+                                                <th>Credit </th>
                                                 <th>Action</th>
+                                                
                                                 
                                               
                
@@ -322,11 +379,24 @@ if(isset($_POST['send']))
                                         <tbody>
  
                                              <?php
+
+                                             $exec = "SELECT member.memberId
+                                                        FROM member, user
+                                                        WHERE member.user_id = user.userId
+                                                        AND user.email = '$name'";
+                                            $results = mysqli_query($con,$exec);
+
+                                            while($line = mysqli_fetch_array($results))
+                                            {
+                                                $mid = $line['memberId'];
+                                            }
                                                
-                                               $payQuery = "SELECT member.memberId,member.name,member.surname,member.id,member.cell_no,member.status,member.gender,claim.status as Stats,claim.claim_date,claim.id_copy,claim.proof,claim.amount
-                                                            FROM member, claim
-                                                            WHERE member.memberId = claim.member_id
-                                                            AND claim.status = 'Pending'";
+                                               $payQuery = "SELECT member.memberId,member.name,member.surname,reserve.amount
+                                                            FROM member,reserve
+                                                            WHERE member.memberId= reserve.memberId
+                                                            and member.memberId= $mid";
+
+
 
                                                $payment = mysqli_query($con,$payQuery);
 
@@ -335,16 +405,8 @@ if(isset($_POST['send']))
                                                   $memberId = $data['memberId'];
                                                    $name = $data['name'];
                                                    $surname = $data['surname'];
-                                                   $id = $data['id'];
-                                                   $cell = $data['cell_no'];
-                                                   $gender = $data['gender'];
-                                                   $status = $data['status'];
-                                                   $amount = $data['amount'];
-                                                   $stats = $data['Stats'];
-                                                   $date = $data['claim_date'];
-                                                   $idCopy = $data['id_copy']; 
-                                                   $proof = $data['proof'];
-
+                                                   $credit = $data['amount'];
+                                                
                                                   
                                                   
 
@@ -354,22 +416,12 @@ if(isset($_POST['send']))
                                                <tr>
                                                     <td> <?php echo $name;  ?>  </td>
                                                     <td> <?php echo $surname;  ?> </td>
-                                                    <td> <?php echo $id;  ?> </td>
-                                                    <td> <?php echo $cell;  ?> </td>
-                                                    <td> <?php echo $gender;  ?> </td>
-                                                    <td> <?php echo $status;  ?> </td>
-                                                    <td> <?php echo "R". $amount;  ?> </td>
-                                                    <td> <?php echo $stats;  ?> </td>
-                                                    <td> <?php echo $date;  ?> </td>
-                                                    <td><a href="uploads/<?php echo $idCopy?>" target="_blank" class="btn btn-warning btn-rounded mb-4">View ID Copy</a> </td>
-                                                    <td><a href="uploads/<?php echo $proof?>" target="_blank" class="btn btn-warning btn-rounded mb-4">View Certificates</a> </td>
-                                            
+                                                    <td> <?php echo $credit;  ?> </td>
+                                               
                                                   
                                                     <div class="text-center">
-                                                   <td>  
-                                                   <a href="approve.php?id=<?php echo $memberId;  ?>&amount=<?php echo $amount; ?>" class="btn btn-success btn-rounded mb-4" >Aprove</a>
-                                                   <a href="" class="btn btn-danger btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm2">Reject</a>
-                                                  
+                                                   <td>  <a href="" class="btn btn-success btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm2">Pay Now</a>
+                                                   
                                                    
                                                   </td>
                                                  
@@ -389,17 +441,17 @@ if(isset($_POST['send']))
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header text-center">
-                <h4 class="modal-title w-100 font-weight-bold">Reject Claim</h4>
+                <h4 class="modal-title w-100 font-weight-bold">Make  payement(Credit)</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div> 
               <div class="modal-body mx-3">
-              <form  method="post"  action="claimApplications.php">
+              <form  method="post"  action="userCredit.php">
                 <div class="md-form mb-5">
-                  <i class="fas fa-id-card prefix grey-text"></i>
-                  <input type="text" name="id" id="defaultForm-email" class="form-control validate" value="<?php echo $memberId;  ?>">
-                  <label data-error="wrong"   data-success="right" for="defaultForm-email">Member Id</label>
+               <!--   <i class="fas fa-id-card prefix grey-text"></i>  -->
+                  <input type="hidden" name="id" id="defaultForm-email" class="form-control validate" value="<?php echo $memberId;  ?>">
+                <!--  <label data-error="wrong"   data-success="right" for="defaultForm-email">Member Id</label>  -->
                 </div>
 
                 <div class="md-form mb-4">
@@ -410,22 +462,25 @@ if(isset($_POST['send']))
 
                 <div class="md-form mb-4">
                   <i class="fas fa-book prefix grey-text"></i>
-                  <select name="reason" id="reason">
-                  <option value="Document Mismatch " > Document Mismatch </option>
-                  <option value="Document Mismatch " > Document Not Certified </option>
-                  </select></br>
-                  <label data-error="wrong" data-success="right" for="reason">Reason </label>
+                  
+                  <select name="membership" id="defaultForm-pass">
+                  <option value="none">Please select Membership Type</option>
+                  <option value="Premium">Premium</option>
+                  <option value="Food">Food</option>
+                  <option value="Bundle">Premium & Food</option>
+                  </select><br>
+                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Membership Due</label>
                 </div>
 
                 <div class="md-form mb-4">
-                  <i class="fas fa-pen prefix grey-text"></i>
-                  <textarea class="form-control" rows="3" id="defaultForm-pass" name="msg" maxlength="50"></textarea>
-                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Comments</label>
+                  <i class="fas fa-coins prefix grey-text"></i>
+                  <input type="text" name="amount" id="defaultForm-pass" class="form-control validate" placeholder= "Enter amount"  ?>
+                  <label data-error="wrong" data-success="right" for="defaultForm-pass">Amount</label>
                 </div>
                
               </div>
               <div class="modal-footer d-flex justify-content-center">
-                <button type="submit" name="send" class="btn btn-success">Submit </button>
+                <button type="submit" name="pay" class="btn btn-success">Pay </button>
               </div>
               <form>
             </div>
@@ -438,15 +493,12 @@ if(isset($_POST['send']))
                             </div>
                         </div>
 
-                       
-
-
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid">
                         <div class="d-flex align-items-center justify-content-between small">
-                           <div class="text-muted">Copyright &copy; Society Management System</div>
+                            <div class="text-muted">Copyright &copy; Your Website 2021</div>
                             <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;
@@ -466,5 +518,6 @@ if(isset($_POST['send']))
         <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
         <script src="assets/demo/datatables-demo.js"></script>
+
     </body>
 </html>

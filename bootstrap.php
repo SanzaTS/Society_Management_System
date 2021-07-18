@@ -12,7 +12,7 @@ $enableSandbox = true;
 // PayPal settings. Change these to your account details and the relevant URLs
 // for your site.  http://127.0.0.1/Society_ Management_System/instant.php
 $paypalConfig = [
-    'client_id' => 'id',
+    'client_id' => 'client id',
     'client_secret' => 'secrete',
     'return_url' => 'http://127.0.0.1/Society_Management_System/response.php',
     'cancel_url' => 'http://127.0.0.1/Society_Management_System/instant.php'

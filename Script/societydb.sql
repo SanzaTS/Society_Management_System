@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 27, 2021 at 01:33 PM
+-- Generation Time: Jun 27, 2021 at 06:31 PM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 8.0.3
 
@@ -70,6 +70,22 @@ INSERT INTO `chat` (`id`, `sender`, `reciever`, `msg`, `date`, `time`, `priority
 (2, 'admin@gmail.com', 'zipho.mathe11@gmail.com', 'Please remember to pay. ', '02/06/2021', '23:20:26', 'High'),
 (3, 'sithole.nosi@gmail.com', 'admin@gmail.com', 'fhfhfh', '02/06/2021', '23:38:47', 'Low'),
 (4, 'admin@gmail.com', 'ben.chiwel@gmail.com', 'Please PAY', '02/06/2021', '23:40:50', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `claim`
+--
+
+CREATE TABLE `claim` (
+  `id` int(10) NOT NULL,
+  `amount` varchar(12) NOT NULL,
+  `status` varchar(25) NOT NULL,
+  `claim_date` varchar(12) NOT NULL,
+  `id_copy` varchar(100) NOT NULL,
+  `proof` varchar(100) NOT NULL,
+  `member_id` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -248,6 +264,7 @@ CREATE TABLE `temporary` (
   `id` int(10) NOT NULL,
   `amount` varchar(15) NOT NULL,
   `membership` varchar(15) NOT NULL,
+  `name` varchar(25) NOT NULL,
   `memberId` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -279,7 +296,7 @@ INSERT INTO `user` (`userId`, `email`, `password`, `createDate`, `active`) VALUE
 (8, 'ben.chiwel@gmail.com', 'password', '2021-06-02', 'offline'),
 (9, 'parker.peter@gmail.com', 'password', '2021-06-03', 'offline'),
 (18, 'rodman@gmail.com', 'password', '2020-11-01', 'offline'),
-(19, 'johnsonB@gmail.com', 'password', '2021-04-07', 'offline');
+(19, 'johnsonB@gmail.com', 'password', '2021-05-07', 'offline');
 
 -- --------------------------------------------------------
 
@@ -326,6 +343,13 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `chat`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `claim`
+--
+ALTER TABLE `claim`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `member_id` (`member_id`);
 
 --
 -- Indexes for table `events`
@@ -411,6 +435,12 @@ ALTER TABLE `chat`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `claim`
+--
+ALTER TABLE `claim`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
@@ -463,6 +493,12 @@ ALTER TABLE `admin`
   ADD CONSTRAINT `admin_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `user` (`userId`);
 
 --
+-- Constraints for table `claim`
+--
+ALTER TABLE `claim`
+  ADD CONSTRAINT `claim_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `member` (`memberId`);
+
+--
 -- Constraints for table `member`
 --
 ALTER TABLE `member`
@@ -479,10 +515,9 @@ ALTER TABLE `payment`
 --
 -- Constraints for table `user_role`
 --
-
--- ALTER TABLE `user_role`
- -- ADD CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`userId`),
---  ADD CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`);
+/* ALTER TABLE `user_role`
+  ADD CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`userId`),
+  ADD CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`);*/
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

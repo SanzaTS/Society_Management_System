@@ -10,26 +10,35 @@ if(isset($_POST['single']))
     $mid = mysqli_real_escape_string($con,$_POST['id']);
     $membership = mysqli_real_escape_string($con,$_POST['membership']);
     $amount = mysqli_real_escape_string($con,$_POST['amount']);
-    $date = date("Y-m-d");
+    $date =date("Y-m-j", strtotime("last day of previous month"))  ;
     $total = 0;
+
+    $months = 0;
 
     if(!empty($amount))
     {
-        if(is_numeric($amount))
+        if(is_numeric($amount)) // payment_date
         {
-            $resuts = mysqli_query($con,"SELECT DATEDIFF(NOW(),payment_date) as NumOfDays FROM payment WHERE member_id = $mid");
+            $resuts = mysqli_query($con,"SELECT TIMESTAMPDIFF(MONTH,MAX(payment_date), NOW()) as Months FROM payment WHERE member_id = $mid");
             while($row = mysqli_fetch_array($resuts))
             {
-                $days = $row['NumOfDays'];
+                $days = $row['Months'];
             }
 
-            $months = round($days / 30, 0);
-          if($months > 1 )
+           // $months = round($days / 30, 0);
+          
+           $months = intval($days);
+          if($months >= 1 )
           {
-            if($membership = "Premium")
+             // echo $months;
+            if($membership == "Premium")
               {
-                  $total = (20 * $months) +  (120 * $months);
-
+                  echo $membership."<br>";
+                 
+                  $total = (20 *intval($months) ) +  (120 * intval($months) );
+                  $amount = intval($amount);
+                  echo  $total ;
+                  echo "<br> amount :".$amount;
                   if($amount >= $total)
                   {
                                         
@@ -58,7 +67,7 @@ if(isset($_POST['single']))
                     echo "<script>alert('$message');</script>";  
                   }
               }
-              elseif($membership = "Food") {
+              elseif($membership == "Food") {
                     $total = (50 * $months) +  (90 * $months);
 
                     if($amount >= $total)
@@ -91,6 +100,8 @@ if(isset($_POST['single']))
                     }
               } 
 
+             
+
           }
           else {
             $message = "Must be more than 1 mothh to make payment";
@@ -117,12 +128,15 @@ if(isset($_POST['double']))
     $amount = mysqli_real_escape_string($con,$_POST['amount']);
     $date = date("Y-m-d");
     $total = 0;
+    $days = 0;
+
+    echo "Amounts: ".$amount;
 
     if(!empty($amount))
-    {
+    { 
         if(is_numeric($amount))
         {
-            $resuts = mysqli_query($con,"SELECT DATEDIFF(NOW(),payment_date) as NumOfDays FROM payment WHERE member_id = $mid");
+            $resuts = mysqli_query($con,"SELECT TIMESTAMPDIFF(MONTH,MAX(payment_date), NOW()) as NumOfDays FROM payment WHERE member_id = $mid");
             while($row = mysqli_fetch_array($resuts))
             {
                 $days = $row['NumOfDays'];
@@ -133,6 +147,8 @@ if(isset($_POST['double']))
           {
             
                   $total = (70 * $months) +  (210 * $months);
+
+                //  echo $total;
 
                   if($amount >= $total)
                   {
@@ -166,8 +182,64 @@ if(isset($_POST['double']))
 
             }
           else {
-            $message = "Must be more than 1 mothh to make payment";
-            echo "<script>alert('$message');</script>";
+           /* $message = "Must be more than 1 mothh to make payment";
+            echo "<script>alert('$message');</script>";*/
+
+            $startDate = mysqli_query($con,"SELECT TIMESTAMPDIFF(MONTH, start_date, NOW()) as Months FROM member WHERE memberId = $mid");
+        //    $monthReg =0;
+            while($row = mysqli_fetch_array($startDate))
+            {
+                $months = $row['Months'];
+               
+            }
+
+            $months = intval($months);
+          
+            echo "Months between". $months; 
+
+            echo "<br> member id :". $mid;
+            if($months > 0)
+            {
+
+
+                
+                $total = (70 * $months) +  (210 * $months);
+
+                if($amount >= $total)
+                {
+                                      
+                  if($amount == $total)
+                  {
+                      $premium = "INSERT INTO payment(payment_date, amount, optionId, member_id, fee_id) VALUES ('$date',$amount,1,$mid,3)";
+                      if(mysqli_query($con,$premium) or die(mysqli_error($con)))
+                      {
+                         
+                          $message = "Payement completed";
+                          echo "<script>alert('$message');</script>";
+    
+                      }
+                      else {
+                          $message ="Payment could not be competed,  something went wrong!";
+                          echo "<script>alert('$message');</script>";
+                      }
+                  }
+                  else {
+                      // reserved
+                  }
+    
+                }
+                else {
+                  $message = "amount due is R".$total ." Ensure you pay full amount";
+                  echo "<script>alert('$message');</script>";  
+                }
+            }
+            else{
+                $message = "Yo can not pay for users registerd this month";
+                echo "<script>alert('$message');</script>";  
+
+            }
+
+
           }
         
         }
@@ -180,6 +252,8 @@ if(isset($_POST['double']))
         $message = "amount must not be empty ";
         echo "<script>alert('$message');</script>";
     }
+ 
+  
 }
 
 ?>
@@ -398,7 +472,7 @@ if(isset($_POST['double']))
                                                 <th>gender</th>
                                                 <th>Owing</th>
                                                 <th>Fine</th>
-                                                <th>Action</th>
+                                                <th>Action</th> 
                                                 
                                               
                
@@ -408,12 +482,14 @@ if(isset($_POST['double']))
  
                                              <?php
                                                
-                                               $payQuery = "SELECT m.memberId,m.name,m.surname,m.id,m.cell_no,m.gender,p.payment_date
+                                               $payQuery = "SELECT m.memberId,m.name,m.surname,m.id,m.cell_no,m.gender,m.start_date,p.payment_date
                                                             FROM member m
                                                             LEFT JOIN payment p 
-                                                            ON m.memberId = p.member_id
+                                                                ON m.memberId = p.member_id
                                                             WHERE p.payment_date IS NULL
-                                                            AND m.status = 'member'";
+                                                            AND m.status = 'member'
+                                                            AND MONTH(m.start_date) <> MONTH(CURRENT_DATE)
+                                                            AND YEAR(m.start_date) <= YEAR(CURRENT_DATE) ";
 
                                                $payment = mysqli_query($con,$payQuery);
 
@@ -451,15 +527,26 @@ if(isset($_POST['double']))
                                                 </div>
                                                    
                                
-                                                </tr>                                                           
+                                                </tr>   
+                                                
+
+                  
 
                                                <?php    
+
+                                               
                                                }
 
 
 
                                               ?>
-        <div class="modal fade" id="modalLoginForm2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+
+
+     
+                                        </tbody>
+                                    </table>
+
+                                    <div class="modal fade" id="modalLoginForm2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
           aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -503,9 +590,7 @@ if(isset($_POST['double']))
             </div>
           </div>
         </div>
-                       
-                                        </tbody>
-                                    </table>
+
                                 </div>
                             </div>
                         </div>
@@ -564,13 +649,13 @@ if(isset($_POST['double']))
                                                             AND p.fee_id = f.fee_id
                                                             AND MONTH(p.payment_date) = MONTH(CURRENT_DATE) - 1
                                                           AND YEAR(p.payment_date) = YEAR(CURRENT_DATE)
+                                                          AND m.status = 'member'
                                                             AND memberId IN  (
                                                                                 SELECT member_id
                                                                                 FROM payment
                                                                                 WHERE fee_id <> 3
                                                                                 GROUP BY member_id
-                                                                                AND m.status = 'member'
-                                                                                HAVING COUNT(member_id) <= 1)";
+                                                                                HAVING COUNT(member_id) = 1)";
 
                                                $payment = mysqli_query($con,$payQuery);
 
@@ -623,15 +708,8 @@ if(isset($_POST['double']))
                                                    
                                                    
                                
-                                                </tr>                                                           
-
-                                               <?php    
-                                               }
-
-
-
-                                              ?>
-        <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                                                </tr>  
+                                                <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
           aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -674,7 +752,15 @@ if(isset($_POST['double']))
               <form>
             </div>
           </div>
-        </div>
+        </div>                                                         
+
+                                               <?php    
+                                               }
+
+
+
+                                              ?>
+
 
 
 

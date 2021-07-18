@@ -308,7 +308,7 @@ if(isset($_POST['SAVE']))
                                                     
                                                   <option value="noselection"> select member</option>
                                                   <?php
-                                                            $userQuery = mysqli_query($con,"SELECT memberId,name,surname FROM member");
+                                                            $userQuery = mysqli_query($con,"SELECT memberId,name,surname FROM member where status = 'member' ");
 
                                                             while($row = mysqli_fetch_array($userQuery))
                                                             {
@@ -349,7 +349,7 @@ if(isset($_POST['SAVE']))
                                             <div class="form-group mt-4 mb-0"><button type="submit" name="pay" class="btn btn-success">Make Payment</button><br></div>
                                          
                                             
-
+                            </form>
 
                     </div>
                 </main>
