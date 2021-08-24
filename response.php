@@ -63,10 +63,10 @@ $insert = "INSERT INTO payment ( payment_date, amount, optionId, member_id, fee_
 
 if(mysqli_query($con,$insert) or die(mysqli_error($con)))
 {
-    $remove = "DELETE FROM temporary WHERE memberId = $memberId ";
+    $remove = "DELETE FROM temporary WHERE memberId = $memberId "; 
     if(mysqli_query($con,$remove))
     {
-        $_SESSION['name'] = $name;
+        $_SESSION['name'] = $name; 
         if($role = "admin")
         {
             header("location:paymentReports.php");
