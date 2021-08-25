@@ -22,7 +22,7 @@ $error = "";
         <div>
                
                
-                <p>Please click the following link to reset your password:  "<a href ="http://localhost//Society_Management_System/reset.php?email='.$email.'"  target="_blank">Password Reset</a>"</p>
+                <p>Please click the following link to reset your password:  "<a href ="http://localhost//Society_Management_System/reset.php?email='.urlencode($email).'"  target="_blank">Password Reset</a>"</p>
                 <p> </p>
                 <p> </p>
                 <p>Regards </p>
@@ -32,6 +32,7 @@ $error = "";
         </div>
         </body>
         </html>';
+        
 
         $sql= "SELECT * FROM user WHERE email = '$email'  ";
 
@@ -41,6 +42,7 @@ $error = "";
 
         if($rows == 1)
         {
+            mysqli_query($con,"INSERT INTO `temporary`(`name`) VALUES('$email')"); 
             if(sendMail($email,$subject,$body))
             {
                 $error = "Link has been submitted to your email";

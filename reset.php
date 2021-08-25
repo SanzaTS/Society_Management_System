@@ -6,22 +6,55 @@ include("funtions.php");
 $error ="";
 $email = $_GET['email'];
 
+//echo $email;
+
 if(isset($_POST['reset']))
 {
     $password = mysqli_real_escape_string($con,$_POST['pass']);
     $password2 = mysqli_real_escape_string($con,$_POST['pass2']);
 
+    echo $password;
+   // echo $email;
+   $sql= "SELECT amount,membership,name,memberId  FROM temporary ";
+
+   $results = mysqli_query($con,$sql);
+   
+   while($row = mysqli_fetch_array($results))
+   {
+      
+       $name = $row['name'];
+       
+   
+   }
 
     if($password == $password2)
     {
-        $results = mysqli_query($con,"UPDATE `user` SET `password`='' WHERE `email` = '$email' ");
+        $sql = "UPDATE user SET password='$password' WHERE email = '$name' ";
+        $results = mysqli_query($con,$sql) or die(mysqli_error($con));
+       // echo $sql;
 
         if($results)
         {
+            $remove = "DELETE FROM temporary WHERE name = '$name' "; 
+           if(mysqli_query($con,$remove))
+           {
+
             $error = "Congratulations! Your password has been updated successfully. You can now Login";
             ?>
             <script type="text/javascript">
-            alert("Congratulations! Your password has been updated successfully. You can now Login");
+            alert("Congratulations! Your password has been updated successfully. You can now Login"<?php echo $email; ?>);
+            window.location.href = "index.php";
+            </script>
+            <?php
+           }
+           
+
+        }
+        else
+        {
+            ?>
+            <script type="text/javascript">
+            alert("Failed");
             window.location.href = "index.php";
             </script>
             <?php
@@ -43,7 +76,7 @@ if(isset($_POST['reset']))
 
 ?>
 
-
+ 
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -54,9 +87,9 @@ if(isset($_POST['reset']))
         <title>Society Management System</title>
         <link href="css/styles.css" rel="stylesheet" />
         <style>
-    body {
+   body {
       background-image: url(2.jpg) ;
-      filter: blur(8px);
+      
     }
   </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>

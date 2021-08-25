@@ -12,8 +12,8 @@ $enableSandbox = true;
 // PayPal settings. Change these to your account details and the relevant URLs
 // for your site.  http://127.0.0.1/Society_ Management_System/instant.php
 $paypalConfig = [
-    'client_id' => 'client id',
-    'client_secret' => 'secrete',
+    'client_id' => 'ASVv6TCLQKFrGW_B3XndPUyGIa5wmEgt-SY8myB_8oWKcG6TWcX0TpFCZ7GvTm6qFStDoyDrxA1V6lk6',
+    'client_secret' => 'EBkp7z0_BYQJExaNnfBTOhAxnJpKqqb-UK3XDzE8BnZIoAC46PMerx-AHY5_Lvd9BXES_i-qtBCkG2ZD',
     'return_url' => 'http://127.0.0.1/Society_Management_System/response.php',
     'cancel_url' => 'http://127.0.0.1/Society_Management_System/instant.php'
 ]; 
