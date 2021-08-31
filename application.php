@@ -33,9 +33,11 @@ if(isset($_POST['SAVE']))
     $certLocation = $targetDir.$cert;
     $certType = pathinfo($certLocation,PATHINFO_EXTENSION);
 
-        if(!empty($fileName) || !empty($cert))
+        if(!empty($fileName) )
         {
-            
+            if( !empty($cert))
+            {
+
             $check = "SELECT member_id, MIN(payment_date) As first_occurence ,year(CURRENT_DATE)- year(MIN(payment_date)) AS years
                       FROM payment
                       WHERE member_id = $mid
@@ -141,10 +143,13 @@ if(isset($_POST['SAVE']))
            
             $error = "You haven't been a member for a year ";
         }
-       
+         }
+         else{
+            $error = 'Make sure you uploaded  your id certificate';
+         }
 
         }else{
-        $error = 'Make sure you uploaded all required documents';
+        $error = 'Make sure you uploaded  your id copy';
         }
 
 
